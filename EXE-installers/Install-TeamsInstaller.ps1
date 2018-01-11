@@ -36,7 +36,7 @@ $script = @"
 #JF;Horten kommune
 #
 `$AppName = "Microsoft Teams"
-`$Installer = $Installer
+`$Installer = "$Installer"
 `$InstArgs = "-s"
 `$Uninstaller = `$env:LOCALAPPDATA + "\Microsoft\Teams\Update.exe"
 `$UninstArgs = "--uninstall -s"
