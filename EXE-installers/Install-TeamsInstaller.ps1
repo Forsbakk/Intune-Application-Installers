@@ -58,7 +58,7 @@ If (`$mode -eq "Install") {
     #
     #Installation
     #
-    If (!(`$detection) {
+    If (!(`$detection)) {
         Write-Verbose "`$AppName is not detected, starting install"
 
         Start-Process -FilePath `$wrkDir\`$Installer -ArgumentList `$InstArgs -Wait
@@ -83,7 +83,6 @@ elseif (`$mode -eq "Uninstall") {
         Write-Verbose "Could not find uninstaller, aborting"
     }
 }
-
 "@
 
 $script | Out-File $scriptDir\$scriptName -Encoding default
