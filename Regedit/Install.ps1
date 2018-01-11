@@ -1,0 +1,3 @@
+$toAdd = @(
+    "HKLM:\SOFTWARE\TestKey"
+)
