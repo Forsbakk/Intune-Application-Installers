@@ -3,4 +3,4 @@
 Contents
 ------
 1. EXE-installers
-..* Install-TeamsInstaller.ps1
+⋅⋅* Install-TeamsInstaller.ps1
