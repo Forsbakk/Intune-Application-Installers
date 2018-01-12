@@ -10,7 +10,7 @@ Contents
     * :heavy_check_mark: *Installs GIMP*
 * Regedit
   * Install-HKLM
-    * :heavy_minus_sign: *Installs REG-files in HKLM,HKCR,HKCC*
+    * :heavy_exclamation_mark: *Installs REG-files in HKLM,HKCR,HKCC*
 
 
 Refrence

@@ -31,5 +31,5 @@ Windows Registry Editor Version 5.00
 ForEach ($reg in $toAdd) {
     $reg | Out-File "$env:TEMP\temp.reg" -Encoding default
     regedit.exe /s "$env:TEMP\temp.reg"
-    Remove-Item "$env:TEMP\temp.reg"
+    #Remove-Item "$env:TEMP\temp.reg"
 }
