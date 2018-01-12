@@ -5,12 +5,12 @@ Contents
 ------
 * EXE-installers
   * Install-TeamsInstaller.ps1
-    * *Installs scripts for installation of Microsoft Teams* :heavy_check_mark:
+    * :heavy_check_mark: *Installs scripts for installation of Microsoft Teams*
   * Install-GIMP.ps1
-    * *Installs GIMP* :heavy_check_mark: 
+    * :heavy_check_mark: *Installs GIMP*
 * Regedit
   * Install-HKLM
-    * *Installs REG-files in HKLM* :heavy_check_mark: 
+    * :heavy_check_mark: *Installs REG-files in HKLM*
 
 
 Refrence
