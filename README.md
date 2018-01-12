@@ -8,6 +8,9 @@ Contents
     * :heavy_check_mark: *Installs scripts for installation of Microsoft Teams*
   * Install-GIMP.ps1
     * :heavy_check_mark: *Installs GIMP*
+  * Install-Audacity.ps1
+    * :heavy_exclamation_mark: *Installs Audacity*
+      * *TODO: Fix missing download-link*
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
