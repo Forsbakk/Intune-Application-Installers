@@ -11,7 +11,7 @@ $Uninstaller = $env:ProgramFiles + "\GIMP 2\uninst\unins000.exe"
 $UninstArgs = "/verysilent"
 $appLocURL = "http://download.gimp.org/mirror/pub/gimp/v2.8/windows/gimp-2.8.22-setup.exe"
 $wrkDir = $env:TEMP
-$detection = Test-Path ($env:ProgramFiles + "GIMP 2\bin\gimp-2.8.exe")
+$detection = Test-Path ($env:ProgramFiles + "\GIMP 2\bin\gimp-2.8.exe")
 $Mode = "Install" #Install or Uninstall
 
 #
