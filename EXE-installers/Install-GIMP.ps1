@@ -33,6 +33,7 @@ If ($mode -eq "Install") {
 
         Invoke-WebRequest -Uri $appLocURL -OutFile $wrkDir\$Installer
         Start-Process -FilePath $wrkDir\$Installer -ArgumentList $InstArgs -Wait
+        Remove-Item -Path $wrkDir\$Installer -Force
     }
 
     #
