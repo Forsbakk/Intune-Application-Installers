@@ -6,12 +6,12 @@
 #
 $AppName = "Audacity"
 $Installer = "audacity-win-2.2.1.exe"
-$InstArgs = ""
-$Uninstaller = ""
-$UninstArgs = ""
-$appLocURL = "https://www.fosshub.com/Audacity.html/audacity-win-2.2.1.exe"
+$InstArgs = "/verysilent"
+$Uninstaller = ${env:ProgramFiles(x86)} + "\Audacity\unins000.exe"
+$UninstArgs = "/verysilent"
+$appLocURL = "" #TODO: Add local hosting area
 $wrkDir = $env:TEMP
-$detection = ""
+$detection = Test-Path (${env:ProgramFiles(x86)} + "\Audacity\audacity.exe")
 $Mode = "Install" #Install or Uninstall
 
 #
@@ -28,11 +28,12 @@ If ($mode -eq "Install") {
     #
     #Installation
     #
-    If ($detection) {
+    If (!($detection)) {
         Write-Verbose "$AppName is not detected, starting install"
 
         Invoke-WebRequest -Uri $appLocURL -OutFile $wrkDir\$Installer
         Start-Process -FilePath $wrkDir\$Installer -ArgumentList $InstArgs -Wait
+        Remove-Item -Path $wrkDir\$Installer -Force
     }
 
     #
