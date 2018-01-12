@@ -5,12 +5,16 @@
 #JF;Horten kommune
 #
 $toAdd = (
+#Disable Consumer Experience
 "@
 Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent]
 `"DisableWindowsConsumerFeatures`"=dword:00000001
+
 @",
+
+#Quick Access
 "@
 Windows Registry Editor Version 5.00
 
