@@ -12,6 +12,7 @@ $toAdd = (
 `"DisableWindowsConsumerFeatures`"=dword:00000001
 
 ",
+#Enable Consumer Experience
 "Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent]
@@ -22,5 +23,5 @@ $toAdd = (
 ForEach ($reg in $toAdd) {
     $reg | Out-File "$env:TEMP\temp.reg" -Encoding default
     regedit.exe /s "$env:TEMP\temp.reg"
-    #Remove-Item "$env:TEMP\temp.reg"
+    Remove-Item "$env:TEMP\temp.reg"
 }
