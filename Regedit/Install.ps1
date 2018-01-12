@@ -1,3 +1,1 @@
-$toAdd = @(
-    "HKLM:\SOFTWARE\TestKey"
-)
+$payload = Get-Content "regedit\SamplePayload.json" | ConvertFrom-Json

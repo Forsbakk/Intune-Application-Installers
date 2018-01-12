@@ -1,0 +1,7 @@
+{
+    "hive" : "HKLM",
+    "path" : "SOFTWARE\\Horten kommune custom",
+    "name" : "Test",
+    "value" : "1",
+    "type" : "REG_SZ"
+}
