@@ -15,8 +15,8 @@ Contents
 
 Refrence
 ------
-:white_check_mark: : Tested and verified
+:heavy_check_mark: : Tested and verified
 
-:curly_loop: : Unverified
+:heavy_minus_sign: : Unverified
 
 :heavy_exclamation_mark: : Known errors
