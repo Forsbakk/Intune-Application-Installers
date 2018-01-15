@@ -27,7 +27,13 @@
 #)
 
 $toAdd = (
-    ""
+#Disable Dont Display Last Username 
+"Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System]
+`"dontdisplaylastusername`"=dword:00000000
+
+"
 )
 
 ForEach ($reg in $toAdd) {
