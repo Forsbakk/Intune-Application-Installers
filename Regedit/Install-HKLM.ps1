@@ -32,6 +32,7 @@ $toAdd = (
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System]
 `"dontdisplaylastusername`"=dword:00000000
+`"test`"=dword:00000000
 
 "
 )
