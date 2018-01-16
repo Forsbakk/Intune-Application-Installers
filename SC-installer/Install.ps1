@@ -16,24 +16,66 @@ function New-Shortcut {
         [string]$SCType,
         [Parameter(Mandatory=$true)]
         [string]$Path,
-        [string]$WorkingDir,
-        [string]$Arguments,
-        [string]$IconFileandType,
-        [string]$Description
+        [string]$WorkingDir = $null,
+        [string]$Arguments = $null,
+        [string]$IconFileandType = $null,
+        [string]$Description = $null
     )
-    $ShellObj = New-Object -ComObject ("WScript.Shell")
-    $SC = $ShellObj.CreateShortcut($env:PUBLIC + "\Desktop\$SCName.$SCType")
-    $SC.TargetPath="$Path"
-    If ($Arguments -ne $null) {
-        $SC.Argument="$Arguments"
+
+    If ($SCType -eq "lnk") {
+        If ($WorkingDir -ne $null) {
+            $Detection = Test-Path ($WorkingDir + "\" + $Path)
+        }
+        Else {
+            $Detection = Test-Path $Path
+        }
     }
-    If ($WorkingDir -ne $null) {
-        $SC.WorkingDirectory = "$WorkingDir";
+    Else {
+        $Detection = "url-file"
     }
-    If ($IconFileandType -ne $null) {
-        $SC.IconLocation = "$IconFileandType";
+    If (!($Detection)) {
+        Write-Warning "Can't detect SC-endpoint, skipping"
     }
-    If ($Description -ne $null) {
-        $SC.Description  = "$Description";
+    else {
+        If (Test-Path ($env:PUBLIC + "\Desktop\$SCName.$SCType")) {
+            Write-Warning "SC already exists, skipping"
+        }
+        else {
+            $ShellObj = New-Object -ComObject ("WScript.Shell")
+            $SC = $ShellObj.CreateShortcut($env:PUBLIC + "\Desktop\$SCName.$SCType")
+            $SC.TargetPath="$Path"
+            If ($Arguments -ne $null) {
+                $SC.Argument="$Arguments"
+            }
+            If ($WorkingDir -ne $null) {
+                $SC.WorkingDirectory = "$WorkingDir";
+            }
+            If ($IconFileandType -ne $null) {
+                $SC.IconLocation = "$IconFileandType";
+            }
+            If ($Description -ne $null) {
+                $SC.Description  = "$Description";
+            }
+        }
     }
+}
+
+$toAdd = (
+    @{
+        Name = "GIMP 2"
+        Type = "lnk"
+        Path = "$env:ProgramFiles" + "\GIMP 2\bin\gimp-2.8.exe"
+        WorkingDir = "%USERPROFILE%"
+        IconFileandType = "$env:ProgramFiles" + "\GIMP 2\bin\gimp-2.8.exe, 0"
+        Description = "GIMP 2.8"
+    },
+    @{
+        Name = "Office 365"
+        Type = "url"
+        Path = "https://portal.office.com"
+    }
+)
+
+ForEach ($shorcut in $toAdd) {
+    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
 }
