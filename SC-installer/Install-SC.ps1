@@ -75,6 +75,20 @@ $toAdd = (
     }
 )
 
+$toRemove = (
+    @{
+        Name = "Office 365"
+        Type = "url"
+    }
+)
+
 ForEach ($shorcut in $toAdd) {
     New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
 }
+#
+#REFRENCE FOR REMOVAL, DISABLED ATM
+#
+#ForEach ($shortcut in $toRemove) {
+#    $SCFile = $env:PUBLIC + "\Desktop\$($shortcut.Name).$($shortcut.Type)"
+#    Remove-Item $SCFile -Force
+#}
