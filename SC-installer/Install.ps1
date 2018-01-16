@@ -38,22 +38,22 @@ function New-Shortcut {
     }
     else {
         If (Test-Path ($env:PUBLIC + "\Desktop\$SCName.$SCType")) {
-            Write-Warning "SC already exists, skipping"
+            Write-Output "SC already exists, skipping"
         }
         else {
             $ShellObj = New-Object -ComObject ("WScript.Shell")
             $SC = $ShellObj.CreateShortcut($env:PUBLIC + "\Desktop\$SCName.$SCType")
             $SC.TargetPath="$Path"
-            If ($Arguments -ne $null) {
+            If ($Arguments.Length -ne 0) {
                 $SC.Argument="$Arguments"
             }
-            If ($WorkingDir -ne $null) {
+            If ($WorkingDir.Length -ne 0) {
                 $SC.WorkingDirectory = "$WorkingDir";
             }
-            If ($IconFileandType -ne $null) {
+            If ($IconFileandType.Length -ne 0) {
                 $SC.IconLocation = "$IconFileandType";
             }
-            If ($Description -ne $null) {
+            If ($Description.Length -ne 0) {
                 $SC.Description  = "$Description";
             }
             $SC.Save()
@@ -78,5 +78,5 @@ $toAdd = (
 )
 
 ForEach ($shorcut in $toAdd) {
-    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
+    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
 }
