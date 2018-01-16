@@ -9,11 +9,13 @@ Contents
   * Install-GIMP.ps1
     * :heavy_check_mark: *Installs GIMP*
   * Install-Audacity.ps1
-    * :heavy_exclamation_mark: *Installs Audacity*
-      * *TODO: Fix missing download-link*
+    * :heavy_check_mark: *Installs Audacity*
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
+* SC-Installer
+  * Install-SC.ps1
+    * :heavy_check_mark: *Installs shorcuts provided inside script*
 
 
 Refrence
