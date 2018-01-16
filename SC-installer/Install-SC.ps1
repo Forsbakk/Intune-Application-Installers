@@ -76,5 +76,5 @@ $toAdd = (
 )
 
 ForEach ($shorcut in $toAdd) {
-    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description | Out-File C:\test.txt -Append
+    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
 }
