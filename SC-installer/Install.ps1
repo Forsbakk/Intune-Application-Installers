@@ -56,6 +56,7 @@ function New-Shortcut {
             If ($Description -ne $null) {
                 $SC.Description  = "$Description";
             }
+            $SC.Save()
         }
     }
 }
