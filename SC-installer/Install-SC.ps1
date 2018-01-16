@@ -63,9 +63,9 @@ $toAdd = (
     @{
         Name = "GIMP 2"
         Type = "lnk"
-        Path = "$env:ProgramFiles" + "\GIMP 2\bin\gimp-2.8.exe"
+        Path = "C:\Program Files\GIMP 2\bin\gimp-2.8.exe"
         WorkingDir = "%USERPROFILE%"
-        IconFileandType = "$env:ProgramFiles" + "\GIMP 2\bin\gimp-2.8.exe, 0"
+        IconFileandType = "C:\Program Files\GIMP 2\bin\gimp-2.8.exe, 0"
         Description = "GIMP 2.8"
     },
     @{
@@ -76,5 +76,5 @@ $toAdd = (
 )
 
 ForEach ($shorcut in $toAdd) {
-    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
+    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description | Out-File C:\test.txt -Append
 }
