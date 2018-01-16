@@ -13,6 +13,9 @@ Contents
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
+* SC-Installer
+  * Install-SC.ps1
+    * :heavy_minus_sign: *Installs shorcuts provided inside script*
 
 
 Refrence
