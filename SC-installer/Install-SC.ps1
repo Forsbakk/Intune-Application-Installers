@@ -23,10 +23,8 @@ function New-Shortcut {
     )
 
     If ($SCType -eq "lnk") {
-        If ($WorkingDir -ne $null) {
-            $Detection = Test-Path ($WorkingDir + "\" + $Path)
-        }
-        Else {
+        $Detection = Test-Path ($WorkingDir + "\" + $Path)
+        If (!($Detection)) {
             $Detection = Test-Path $Path
         }
     }
