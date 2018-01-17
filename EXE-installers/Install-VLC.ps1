@@ -1,17 +1,17 @@
-﻿#
-#Install-GIMP.ps1
+#
+#Install.ps1
 #Installs EXE applications in Microsoft Intune
 #11.01.2018
 #JF;Horten kommune
 #
-$AppName = "GIMP"
-$Installer = "gimp-2.8.22-setup.exe"
-$InstArgs = "/verysilent"
-$Uninstaller = "C:\Program Files\GIMP 2\uninst\unins000.exe"
-$UninstArgs = "/verysilent"
-$appLocURL = "http://download.gimp.org/mirror/pub/gimp/v2.8/windows/gimp-2.8.22-setup.exe"
+$AppName = "VLC Media Player"
+$Installer = "vlc-2.2.8-win64.exe"
+$InstArgs = "/S"
+$Uninstaller = "C:\Program Files (x86)\VideoLAN\VLC\uninstall.exe"
+$UninstArgs = "/S"
+$appLocURL = "https://mirror.zetup.net/videolan/vlc/2.2.8/win64/vlc-2.2.8-win64.exe"
 $wrkDir = $env:TEMP
-$detection = Test-Path "C:\Program Files\GIMP 2\bin\gimp-2.8.exe"
+$detection = Test-Path "C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
 $Mode = "Install" #Install or Uninstall
 
 #
