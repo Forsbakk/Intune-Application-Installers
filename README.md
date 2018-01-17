@@ -10,6 +10,8 @@ Contents
     * :heavy_check_mark: *Installs GIMP*
   * Install-Audacity.ps1
     * :heavy_check_mark: *Installs Audacity*
+  * Install-OfficeMix.ps1
+    * :heavy_minus_sign: *Installs Office Mix*
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
