@@ -7,11 +7,11 @@
 $AppName = "Office Mix"
 $Installer = "OfficeMix.Setup.exe"
 $InstArgs = "firstrun=0 /quiet /norestart"
-$Uninstaller = ""
-$UninstArgs = ""
 $appLocURL = "http://sublog.org/storage/OfficeMix.Setup.exe"
 $wrkDir = $env:TEMP
-$detection = ""
+$detection = Test-Path "C:\Program Files (x86)\Office Mix\OfficeMix.potx"
+$Uninstaller = $wrkDir + "\" + $Installer
+$UninstArgs = "/uninstall /quiet"
 $Mode = "Install" #Install or Uninstall
 
 #
@@ -48,6 +48,8 @@ If ($mode -eq "Install") {
 #UNINSTALL MODE
 #
 elseif ($mode -eq "Uninstall") {
+    Invoke-WebRequest -Uri $appLocURL -OutFile $Uninstaller
+
     If (Test-Path $Uninstaller) {
         Start-Process $Uninstaller -ArgumentList $UninstArgs -Wait
     }
