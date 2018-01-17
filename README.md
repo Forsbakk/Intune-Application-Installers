@@ -12,6 +12,8 @@ Contents
     * :heavy_check_mark: *Installs Audacity*
   * Install-OfficeMix.ps1
     * :heavy_check_mark: *Installs Office Mix*
+  * Install-VLC.ps1
+    * :heavy_minus_sign: *Installs VLC Media Player*
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
