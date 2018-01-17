@@ -28,7 +28,7 @@ If ($mode -eq "Install") {
     #
     #Installation
     #
-    If ($detection) {
+    If (!($detection)) {
         Write-Verbose "$AppName is not detected, starting install"
 
         Invoke-WebRequest -Uri $appLocURL -OutFile $wrkDir\$Installer
