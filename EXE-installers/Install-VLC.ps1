@@ -4,14 +4,14 @@
 #11.01.2018
 #JF;Horten kommune
 #
-$AppName = ""
-$Installer = ""
-$InstArgs = ""
-$Uninstaller = ""
-$UninstArgs = ""
-$appLocURL = ""
+$AppName = "VLC Media Player"
+$Installer = "vlc-2.2.8-win64.exe"
+$InstArgs = "/S"
+$Uninstaller = "C:\Program Files (x86)\VideoLAN\VLC\uninstall.exe"
+$UninstArgs = "/S"
+$appLocURL = "https://mirror.zetup.net/videolan/vlc/2.2.8/win64/vlc-2.2.8-win64.exe"
 $wrkDir = $env:TEMP
-$detection = ""
+$detection = Test-Path "C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
 $Mode = "Install" #Install or Uninstall
 
 #
