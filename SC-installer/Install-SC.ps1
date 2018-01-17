@@ -72,6 +72,15 @@ $toAdd = (
         Name = "Office 365"
         Type = "url"
         Path = "https://portal.office.com"
+    },
+    @{
+        Name = "Google Earth"
+        Type = "lnk"
+        Path = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+        WorkingDir = "C:\Program Files (x86)\Google\Chrome\Application"
+        IconFileandType = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe, 0"
+        Description = "Google Earth Cloud"
+        Arguments = "https://earth.google.com"
     }
 )
 
