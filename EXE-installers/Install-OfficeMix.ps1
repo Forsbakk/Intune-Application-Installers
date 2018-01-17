@@ -4,12 +4,12 @@
 #11.01.2018
 #JF;Horten kommune
 #
-$AppName = ""
-$Installer = ""
-$InstArgs = ""
+$AppName = "Office Mix"
+$Installer = "OfficeMix.Setup.exe"
+$InstArgs = "firstrun=0 /quiet /norestart"
 $Uninstaller = ""
 $UninstArgs = ""
-$appLocURL = ""
+$appLocURL = "http://sublog.org/storage/OfficeMix.Setup.exe"
 $wrkDir = $env:TEMP
 $detection = ""
 $Mode = "Install" #Install or Uninstall
