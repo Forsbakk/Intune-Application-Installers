@@ -16,7 +16,7 @@ Contents
     * :heavy_check_mark: *Installs VLC Media Player*
 * Get-WindowsAutoPilotInfo
   * Get-WindowsAutoPilotInfo.ps1
-    * :heavy_check_sign: *Get info for Windows AutoPilot*
+    * :heavy_check_mark: *Get info for Windows AutoPilot*
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
