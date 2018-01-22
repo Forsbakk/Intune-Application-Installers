@@ -17,7 +17,6 @@ function New-Shortcut {
         [Parameter(Mandatory=$true)]
         [string]$Path,
         [string]$WorkingDir = $null,
-        [string]$Arguments = $null,
         [string]$IconFileandType = $null,
         [string]$Description = $null
     )
@@ -42,9 +41,6 @@ function New-Shortcut {
             $ShellObj = New-Object -ComObject ("WScript.Shell")
             $SC = $ShellObj.CreateShortcut($env:PUBLIC + "\Desktop\$SCName.$SCType")
             $SC.TargetPath="$Path"
-            If ($Arguments.Length -ne 0) {
-                $SC.Argument="$Arguments"
-            }
             If ($WorkingDir.Length -ne 0) {
                 $SC.WorkingDirectory = "$WorkingDir";
             }
@@ -72,6 +68,14 @@ $toAdd = (
         Name = "Office 365"
         Type = "url"
         Path = "https://portal.office.com"
+    },
+    @{
+        Name = "Google Earth"
+        Type = "lnk"
+        Path = "`"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe`" https://earth.google.com"
+        WorkingDir = "C:\Program Files (x86)\Google\Chrome\Application"
+        IconFileandType = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe, 0"
+        Description = "Google Earth Cloud"
     }
 )
 
@@ -83,7 +87,7 @@ $toRemove = (
 )
 
 ForEach ($shorcut in $toAdd) {
-    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
+    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
 }
 #
 #REFRENCE FOR REMOVAL, DISABLED ATM
