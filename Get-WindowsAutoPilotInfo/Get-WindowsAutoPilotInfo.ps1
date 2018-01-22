@@ -4,7 +4,7 @@
 #22.01.2018
 #JF;Horten kommune
 #
-#Usage: powershell.exe -Executionpolicy Bypass -Command "& { . Get-WindowsAutoPilotInfo.ps1; Add-AutoPilot -FilePath <path>"
+#Usage: powershell.exe -Executionpolicy Bypass -Command "& { . Get-WindowsAutoPilotInfo.ps1; Add-AutoPilot -FilePath <path> }"
 #
 function Get-WindowsAutoPilotInfo {
     Param (
