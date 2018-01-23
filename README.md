@@ -19,7 +19,7 @@ Contents
     * :heavy_check_mark: *Get info for Windows AutoPilot*
 * MDT Deployment for Intune
  * Enable-OOBE.ps1
-    * :heavy_minus_sign: *Enables OOBE after MDT Task Sequence has completed*
+    * :heavy_check_mark: *Enables OOBE after MDT Task Sequence has completed*
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
