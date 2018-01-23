@@ -25,6 +25,11 @@ function New-Shortcut {
         $Detection = Test-Path ($WorkingDir + "\" + $Path)
         If (!($Detection)) {
             $Detection = Test-Path $Path
+            If (!($Detection)) {
+                $Path = $Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
+                $Path = $Path[0]
+                $Detection = Test-Path $Path
+            }
         }
     }
     Else {
