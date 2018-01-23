@@ -9,11 +9,13 @@ $i = 1
 
 Do {
     $proc = Get-Process -Name "TsManager"
-    Write-Verbose "Task Sequence is still running;Waiting pass $i"
+    Write-Host "Task Sequence is still running;Waiting pass $i"
     $i++
     Start-Sleep -Seconds 1
 }
 While ($proc.Name -contains "TsManager")
+
+Pause
 
 $Sysprep = "C:\Windows\System32\Sysprep\sysprep.exe"
 $SysprepArgs = "/oobe /reboot"
