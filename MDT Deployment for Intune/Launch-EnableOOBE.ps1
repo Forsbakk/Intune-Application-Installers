@@ -4,13 +4,5 @@
 #23.01.2018
 #JF;Horten kommune
 #
-
-If ($TSEnv:SkipFinalSummary -eq "YES") {
-    $Arguments = "-Executionpolicy Bypass -File `"$PSScriptRoot\Enable-OOBE-ps1`""
-    Write-Host "SkipFinalSummary eq YES; launching script"
-    Pause
-    Start-Process "powershell.exe" -ArgumentList $Arguments
-}
-else {
-    Write-Host "SkipFinalSummary is not configured correctly; aborting"
-}
+$Arguments = "-Executionpolicy Bypass -File `"$PSScriptRoot\Enable-OOBE-ps1`""
+Start-Process "powershell.exe" -ArgumentList $Arguments

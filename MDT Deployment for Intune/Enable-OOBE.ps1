@@ -15,8 +15,6 @@ Do {
 }
 While ($proc.Name -contains "TsManager")
 
-Pause
-
 $Sysprep = "C:\Windows\System32\Sysprep\sysprep.exe"
 $SysprepArgs = "/oobe /reboot"
 
