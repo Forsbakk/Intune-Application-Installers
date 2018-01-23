@@ -4,7 +4,6 @@
 #22.01.2018
 #JF;Horten kommune
 #
-
 $i = 1
 
 Do {
