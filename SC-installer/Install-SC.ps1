@@ -22,13 +22,15 @@ function New-Shortcut {
     )
 
     If ($SCType -eq "lnk") {
-        $Detection = Test-Path ($WorkingDir + "\" + $Path)
+        $verPath = $WorkingDir + "\" + $Path
+        $Detection = Test-Path $verPath
         If (!($Detection)) {
-            $Detection = Test-Path $Path
+            $verPath = $Path
+            $Detection = Test-Path $verPath
             If (!($Detection)) {
-                $Path = $Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
-                $Path = $Path[0]
-                $Detection = Test-Path $Path
+                $verPath = $Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
+                $verPath = $verPath[0] -replace '"',''
+                $Detection = Test-Path $verPath
             }
         }
     }
