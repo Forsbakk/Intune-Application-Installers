@@ -17,6 +17,7 @@ function New-Shortcut {
         [Parameter(Mandatory=$true)]
         [string]$Path,
         [string]$WorkingDir = $null,
+        [string]$Arguments = $null,
         [string]$IconFileandType = $null,
         [string]$Description = $null
     )
@@ -51,6 +52,9 @@ function New-Shortcut {
             If ($WorkingDir.Length -ne 0) {
                 $SC.WorkingDirectory = "$WorkingDir";
             }
+            If ($Arguments.Length -ne 0) {
+                $SC.Arguments = "$Arguments";
+            }
             If ($IconFileandType.Length -ne 0) {
                 $SC.IconLocation = "$IconFileandType";
             }
@@ -79,7 +83,8 @@ $toAdd = (
     @{
         Name = "Google Earth"
         Type = "lnk"
-        Path = "`"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe`" https://earth.google.com"
+        Path = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+        Arguments = "https://earth.google.com"
         WorkingDir = "C:\Program Files (x86)\Google\Chrome\Application"
         IconFileandType = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe, 0"
         Description = "Google Earth Cloud"
@@ -94,7 +99,7 @@ $toRemove = (
 )
 
 ForEach ($shorcut in $toAdd) {
-    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
+    New-Shortcut -SCName $shorcut.Name -SCType $shorcut.Type -Path $shorcut.Path -WorkingDir $shorcut.WorkingDir -Arguments $shorcut.Arguments -IconFileandType $shorcut.IconFileandType -Description $shorcut.Description
 }
 #
 #REFRENCE FOR REMOVAL, DISABLED ATM
