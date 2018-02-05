@@ -1,0 +1,32 @@
+## Configure the apps to be removed
+$AppsList = "Microsoft.BingWeather",
+            "Microsoft.SkypeApp",
+            "Microsoft.ZuneVideo",
+            "Microsoft.GetHelp",
+            "Microsoft.Getstarted",
+            "Microsoft.MicrosoftSolitaireCollection",
+            "Microsoft.Advertising.Xaml",
+            "Microsoft.XboxApp"
+            "Microsoft.XboxGameCallableUI"
+            "Microsoft.XboxSpeechToTextOverlay"
+            "Microsoft.XboxGameOverlay"
+            "Microsoft.Xbox.TCUI"
+            "Microsoft.Messaging"
+            "microsoft.windowscommunicationsapps"
+ 
+##Remove the Apps listed above or report if app not present
+ForEach ($App in $AppsList)
+{
+    $ProPackageFullName = (Get-AppxProvisionedPackage -Online | Where {$_.Displayname -eq $App}).PackageName
+ 
+    If ($ProPackageFullName) {
+        Write-Host "Removing Provisioned Package: $ProPackageFullName"
+        Remove-AppxProvisionedPackage -Online -PackageName $ProPackageFullName
+    }
+ 
+    Else {
+        Write-Verbose "Unable To Find Provisioned Package: $App"
+    }
+}
+ 
+## End
