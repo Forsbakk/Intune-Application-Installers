@@ -3,17 +3,6 @@
 
 Contents
 ------
-* EXE-installers
-  * Install-TeamsInstaller.ps1
-    * :heavy_check_mark: *Installs scripts for installation of Microsoft Teams*
-  * Install-GIMP.ps1
-    * :heavy_check_mark: *Installs GIMP*
-  * Install-Audacity.ps1
-    * :heavy_check_mark: *Installs Audacity*
-  * Install-OfficeMix.ps1
-    * :heavy_check_mark: *Installs Office Mix*
-  * Install-VLC.ps1
-    * :heavy_check_mark: *Installs VLC Media Player*
 * Get-WindowsAutoPilotInfo
   * Get-WindowsAutoPilotInfo.ps1
     * :heavy_check_mark: *Get info for Windows AutoPilot*
@@ -23,9 +12,8 @@ Contents
 * Regedit
   * Install-HKLM
     * :heavy_check_mark: *Installs REG-files in HKLM*
-* SC-Installer
-  * Install-SC.ps1
-    * :heavy_check_mark: *Installs shorcuts provided inside script*
+* Continuous delivery for Intune
+  * :heavy_check_mark: *Installs EXE-applications and Shortcuts based on JSON-file in the cloud*
 
 
 Refrence
