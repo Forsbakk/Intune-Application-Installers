@@ -21,7 +21,7 @@ function Install-EXE {
 
             Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$Installer
             Start-Process -FilePath `$wrkDir\`$Installer -ArgumentList `$InstArgs -Wait
-            Remove-Item -Path `$wrkDir\`$Installer -Force #Clean up installation file
+            Remove-Item -Path `$wrkDir\`$Installer -Force
             If (!(Test-Path `$detection)) {
                 Write-Error "`$AppName not detected after installation"
             }
