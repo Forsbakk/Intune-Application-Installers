@@ -11,14 +11,14 @@ $Apps = @(
         Mode = "Install"
     },
     @{
-        Name = "VLC Media Player"
-        Installer = "vlc-2.2.8-win32.exe"
-        InstArgs = "/S"
-        Uninstaller = "C:\Program Files (x86)\VideoLAN\VLC\uninstall.exe"
-        UninstArgs = "/S"
-        appLocURL = "http://vlc.viem-it.no/vlc/2.2.8/win32/vlc-2.2.8-win32.exe"
+        Name = "Audacity"
+        Installer = "audacity-win-2.2.1.exe"
+        InstArgs = "/verysilent"
+        Uninstaller = "C:\Program Files\Audacity\unins000.exe"
+        UninstArgs = "/verysilent"
+        appLocURL = "http://sublog.org/storage/audacity-win-2.2.1.exe"
         wrkDir = "C:\Windows\Temp"
-        detection = "C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
+        detection = "C:\Program Files\Audacity\audacity.exe"
         Mode = "Install"
     }
     
