@@ -22,7 +22,7 @@ $CustomExec = @(
                         Rule = "[bool](Get-WmiObject -Query `"select * from win32_printer where name like '%HK-ELEV%'`")"
                     }
                 )
-                wrkDir = "C:\Windows\Temp"                
+                wrkDir = "C:\Temp"                
             }
         )
     }
