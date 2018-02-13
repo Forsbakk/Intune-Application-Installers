@@ -5,9 +5,11 @@ $CustomExec = @(
                 Name = "Deploy printer"
                 FilesToDwnload = @(
                     @{
+                        FileName = "deploy-printer.ps1"
                         URL = "http://sublog.org/storage/deploy-printer.ps1"
                     },
                     @{
+                        FileName = "printerdriver.zip"
                         URL = "http://sublog.org/storage/printerdriver.zip"
                     }
                 )

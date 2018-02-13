@@ -15,5 +15,5 @@ function Install-AdvancedApplication {
         Invoke-WebRequest -Uri $dwnload -OutFile $wrkDir
     }
 }
-
 Install-AdvancedApplication -Name $AdvInstallers.Soultion.Name -FilesToDwnload $AdvInstallers.Soultion.FilesToDwnload -wrkDir $AdvInstallers.Soultion.wrkDir
+Remove-Item $AdvInstConfig -Force
