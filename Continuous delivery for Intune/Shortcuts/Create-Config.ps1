@@ -9,12 +9,6 @@ $Shortcuts = @(
         Mode = "Install"
     },
     @{
-        Name = "Office 365"
-        Type = "url"
-        Path = "https://portal.office.com"
-        Mode = "Install"
-    },
-    @{
         Name = "Google Earth"
         Type = "lnk"
         Path = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
@@ -22,6 +16,16 @@ $Shortcuts = @(
         WorkingDir = "C:\Program Files (x86)\Google\Chrome\Application"
         IconFileandType = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe, 0"
         Description = "Google Earth Cloud"
+        Mode = "Install"
+    },
+    @{
+        Name = "Office 365"
+        Type = "lnk"
+        Path = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+        Arguments = "https://adfs.horten.kommune.no/adfs/ls/?wa=wsignin1.0&wtrealm=urn:federation:MicrosoftOnline&wctx=wa%3Dwsignin1.0%26rpsnv%3D3%26ver%3D6.4.6456.0%26wp%3DMCMBI%26wreply%3Dhttps:%252F%252Fportal.office.com%252Flanding.aspx%253Ftarget%253D%25252fHome&RedirectToIdentityProvider=http%3a%2f%2fadfs.horten.kommune.no%2fadfs%2fservices%2ftrust"
+        WorkingDir = "C:\Program Files (x86)\Google\Chrome\Application"
+        IconFileandType = "C:\Program Files (x86)\Microsoft Office\root\Office16\protocolhandler.exe, 0"
+        Description = "Office 365"
         Mode = "Install"
     }
 )
