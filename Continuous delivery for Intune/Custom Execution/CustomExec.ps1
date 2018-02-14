@@ -11,8 +11,9 @@ function Install-AdvancedApplication {
         [string]$wrkDir
     )
     foreach ($dwnload in $FilesToDwnload) {
-        $dwnload = $dwnload | Select-Object -ExpandProperty URL
-        Invoke-WebRequest -Uri $dwnload -OutFile $wrkDir
+        $URL = $dwnload | Select-Object -ExpandProperty URL
+        $FileName = $dwnload | Select-Object -ExpandProperty FileName
+        Invoke-WebRequest -Uri $URL -OutFile $wrkDir\$FileName
     }
 }
 Install-AdvancedApplication -Name $AdvInstallers.Soultion.Name -FilesToDwnload $AdvInstallers.Soultion.FilesToDwnload -wrkDir $AdvInstallers.Soultion.wrkDir
