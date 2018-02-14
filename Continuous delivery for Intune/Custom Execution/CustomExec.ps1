@@ -16,11 +16,14 @@ function Install-AdvancedApplication {
 
     foreach ($detect in $Detection) {
         $DetectionRule = $detect | Select-Object -ExpandProperty Rule
+        Write-Host "$DetectionRule"
         if ($DetectionRule) {
             $DetectionCounter++
+            Write-Host "$DetectionRule is true"
             Write-Host $DetectionCounter 
         }
     }
+
     If (!($DetectionRulesCount -eq $DetectionCounter)) {
         Write-Host "Not detected"
         foreach ($dwnload in $FilesToDwnload) {
