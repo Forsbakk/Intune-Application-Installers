@@ -21,7 +21,7 @@ $CustomExec = @(
                 )
                 Detection = @(
                     @{
-                        Rule = "[bool](Get-WmiObject -Query `"select * from win32_printer where name like '%HK-ELEV%'`")"
+                        Rule = "[bool](Get-WmiObject -Query `"select * from win32_printer where name like '%OneNote%'`")"
                     }
                 )
                 wrkDir = "C:\Temp"                

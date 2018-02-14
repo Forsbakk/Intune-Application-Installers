@@ -17,9 +17,11 @@ function Install-AdvancedApplication {
         $DetectionRule = $detect | Select-Object -ExpandProperty Rule
         if ($DetectionRule) {
             $DetectionCounter++
+            Write-Host $DetectionCounter 
         }
     }
     If (!($DetectionRules -eq $DetectionCounter)) {
+        Write-Host "Not detected"
         foreach ($dwnload in $FilesToDwnload) {
             $URL = $dwnload | Select-Object -ExpandProperty URL
             $FileName = $dwnload | Select-Object -ExpandProperty FileName
@@ -35,5 +37,5 @@ function Install-AdvancedApplication {
         Write-Host "$Name detected, aborting"
     }
 }
-Install-AdvancedApplication -Name $AdvInstallers.Soultion.Name -FilesToDwnload $AdvInstallers.Soultion.FilesToDwnload -Execution $AdvInstallers.Soultion.Execution -wrkDir $AdvInstallers.Soultion.wrkDir
+Install-AdvancedApplication -Name $AdvInstallers.Soultion.Name -FilesToDwnload $AdvInstallers.Soultion.FilesToDwnload -Execution $AdvInstallers.Soultion.Execution -wrkDir $AdvInstallers.Soultion.wrkDir -Detection $AdvInstallers.Soultion.Detection
 Remove-Item $AdvInstConfig -Force
