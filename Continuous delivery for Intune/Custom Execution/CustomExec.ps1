@@ -16,8 +16,8 @@ function Install-AdvancedApplication {
 
     foreach ($detect in $Detection) {
         $DetectionRule = $detect | Select-Object -ExpandProperty Rule
-        Write-Host "$DetectionRule"
-        if ($DetectionRule) {
+        Write-Host $DetectionRule
+        if ([bool]$DetectionRule -eq $true) {
             $DetectionCounter++
             Write-Host "$DetectionRule is true"
             Write-Host $DetectionCounter 
