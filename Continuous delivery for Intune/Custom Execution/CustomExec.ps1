@@ -10,11 +10,30 @@ function Install-AdvancedApplication {
         [psobject]$Detection,
         [string]$wrkDir
     )
-    foreach ($dwnload in $FilesToDwnload) {
-        $URL = $dwnload | Select-Object -ExpandProperty URL
-        $FileName = $dwnload | Select-Object -ExpandProperty FileName
-        Invoke-WebRequest -Uri $URL -OutFile $wrkDir\$FileName
+
+    $DetectionRules = $Detection.Count
+    $DetectionCounter = 0
+    foreach ($detect in $Detection) {
+        $DetectionRule = $detect | Select-Object -ExpandProperty Rule
+        if ($DetectionRule) {
+            $DetectionCounter++
+        }
+    }
+    If (!($DetectionRules -eq $DetectionCounter)) {
+        foreach ($dwnload in $FilesToDwnload) {
+            $URL = $dwnload | Select-Object -ExpandProperty URL
+            $FileName = $dwnload | Select-Object -ExpandProperty FileName
+            Invoke-WebRequest -Uri $URL -OutFile $wrkDir\$FileName
+        }
+        foreach ($Execute in $Execution) {
+            $Program = $Execute | Select-Object -ExpandProperty Execute
+            $Arguments = $Execute | Select-Object -ExpandProperty Arguments
+            Start-Process -FilePath $Program -ArgumentList $Arguments
+        }
+    }
+    else {
+        Write-Host "$Name detected, aborting"
     }
 }
-Install-AdvancedApplication -Name $AdvInstallers.Soultion.Name -FilesToDwnload $AdvInstallers.Soultion.FilesToDwnload -wrkDir $AdvInstallers.Soultion.wrkDir
+Install-AdvancedApplication -Name $AdvInstallers.Soultion.Name -FilesToDwnload $AdvInstallers.Soultion.FilesToDwnload -Execution $AdvInstallers.Soultion.Execution -wrkDir $AdvInstallers.Soultion.wrkDir
 Remove-Item $AdvInstConfig -Force
