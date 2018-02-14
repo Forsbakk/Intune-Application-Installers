@@ -181,7 +181,13 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 }
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
-$User = "SYSTEM"
-$Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
-$Trigger = New-ScheduledTaskTrigger -AtLogOn
-Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -TaskName "Continuous delivery for Intune"
+$ScheduledTask = Get-ScheduledTask -TaskName "Continuous delivery for Intune"
+if (!($ScheduledTask)) {
+    $User = "SYSTEM"
+    $Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
+    $Trigger = New-ScheduledTaskTrigger -AtLogOn
+    Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -TaskName "Continuous delivery for Intune"
+}
+else {
+    Write-Host "Scheduled Task already exists"
+}
