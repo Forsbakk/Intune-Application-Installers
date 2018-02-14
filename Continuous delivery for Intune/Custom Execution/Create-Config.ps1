@@ -22,6 +22,9 @@ $CustomExec = @(
                 Detection = @(
                     @{
                         Rule = "[bool](Get-WmiObject -Query `"select * from win32_printer where name like '%OneNote%'`")"
+                    },
+                    @{
+                        Rule = "Test-Path `"C:\tmp\test`""
                     }
                 )
                 wrkDir = "C:\Temp"                
