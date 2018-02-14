@@ -145,7 +145,7 @@ function Install-AdvancedApplication {
 }
 
 `$AppConfig = `$env:TEMP + "\AppConfig.JSON"
-Invoke-WebRequest -Uri "" -OutFile `$AppConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
 `$Applications = Get-Content `$AppConfig | ConvertFrom-Json
 
 foreach (`$app in `$Applications) {
@@ -155,7 +155,7 @@ foreach (`$app in `$Applications) {
 Remove-Item `$AppConfig -Force
 
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
-Invoke-WebRequest -Uri "" -OutFile `$AdvInstConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
 `$AdvInstallers = Get-Content `$AdvInstConfig | ConvertFrom-Json
 
 foreach (`$AdvInst in `$AdvInstallers) {
@@ -165,7 +165,7 @@ foreach (`$AdvInst in `$AdvInstallers) {
 Remove-Item `$AdvInstConfig -Force
 
 `$SCConfig = `$env:TEMP + "\SCConfig.JSON"
-Invoke-WebRequest -Uri "" -OutFile `$SCConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile `$SCConfig
 `$SCs = Get-Content `$SCConfig | ConvertFrom-Json
 
 foreach (`$sc in `$SCs) {
