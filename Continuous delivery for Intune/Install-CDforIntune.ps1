@@ -155,7 +155,7 @@ foreach (`$app in `$Applications) {
 Remove-Item `$AppConfig -Force
 
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
-Invoke-WebRequest -Uri "" -OutFile `$AdvInstConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
 `$AdvInstallers = Get-Content `$AdvInstConfig | ConvertFrom-Json
 
 foreach (`$AdvInst in `$AdvInstallers) {
