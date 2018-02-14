@@ -136,7 +136,11 @@ function Install-AdvancedApplication {
         foreach (`$Execute in `$Execution) {
             `$Program = `$Execute | Select-Object -ExpandProperty Execute
             `$Arguments = `$Execute | Select-Object -ExpandProperty Arguments
-            Start-Process -FilePath `$Program -ArgumentList `$Arguments
+            Start-Process -FilePath `$Program -ArgumentList `$Arguments -Wait
+        }
+        foreach (`$dwnload in `$FilesToDwnload) {
+            `$FileName = `$dwnload | Select-Object -ExpandProperty FileName
+            Remove-Item `$wrkDir\`$FileName -Force
         }
     }
     else {
