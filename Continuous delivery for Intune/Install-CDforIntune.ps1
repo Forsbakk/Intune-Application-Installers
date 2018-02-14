@@ -26,7 +26,7 @@ function Install-EXE {
                 Write-Error "`$AppName not detected after installation"
             }
         }
-        Else { #App already detected
+        Else {
             Write-Host "`$AppName detected, will NOT install"
         }
     }
@@ -106,6 +106,44 @@ function Install-SC {
     }
 }
 
+function Install-AdvancedApplication {
+    Param (
+        [string]`$Name,
+        [psobject]`$FilesToDwnload,
+        [psobject]`$Execution,
+        [psobject]`$Detection,
+        [string]`$wrkDir
+    )
+
+    `$DetectionRulesCount = `$Detection | Measure-Object | Select-Object -ExpandProperty Count
+    `$DetectionCounter = 0
+
+    foreach (`$detect in `$Detection) {
+        `$DetectionRule = `$detect | Select-Object -ExpandProperty Rule
+        `$runDetectionRule = Invoke-Expression -Command `$DetectionRule
+        if (`$runDetectionRule -eq `$true) {
+            `$DetectionCounter++
+        }
+    }
+
+    If (!(`$DetectionRulesCount -eq `$DetectionCounter)) {
+        Write-Host "Not detected"
+        foreach (`$dwnload in `$FilesToDwnload) {
+            `$URL = `$dwnload | Select-Object -ExpandProperty URL
+            `$FileName = `$dwnload | Select-Object -ExpandProperty FileName
+            Invoke-WebRequest -Uri `$URL -OutFile `$wrkDir\`$FileName
+        }
+        foreach (`$Execute in `$Execution) {
+            `$Program = `$Execute | Select-Object -ExpandProperty Execute
+            `$Arguments = `$Execute | Select-Object -ExpandProperty Arguments
+            Start-Process -FilePath `$Program -ArgumentList `$Arguments
+        }
+    }
+    else {
+        Write-Host "`$Name detected, aborting"
+    }
+}
+
 `$AppConfig = `$env:TEMP + "\AppConfig.JSON"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
 `$Applications = Get-Content `$AppConfig | ConvertFrom-Json
@@ -115,6 +153,16 @@ foreach (`$app in `$Applications) {
 }
 
 Remove-Item `$AppConfig -Force
+
+`$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
+Invoke-WebRequest -Uri "" -OutFile `$AdvInstConfig
+`$AdvInstallers = Get-Content `$AdvInstConfig | ConvertFrom-Json
+
+foreach (`$AdvInst in `$AdvInstallers) {
+    Install-AdvancedApplication -Name `$AdvInst.Name -FilesToDwnload `$AdvInst.FilesToDwnload -Execution `$AdvInst.Execution -wrkDir `$AdvInst.wrkDir -Detection `$AdvInst.Detection
+}
+
+Remove-Item `$AdvInstConfig -Force
 
 `$SCConfig = `$env:TEMP + "\SCConfig.JSON"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile `$SCConfig
@@ -131,9 +179,15 @@ Remove-Item `$SCConfig -Force
 If (!(Test-Path "C:\Windows\Scripts")) {
     New-Item "C:\Windows\Scripts" -ItemType Directory
 }
-$Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1"
+$Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
-$User = "SYSTEM"
-$Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
-$Trigger = New-ScheduledTaskTrigger -AtLogOn
-Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -TaskName "Continuous delivery for Intune"
+$ScheduledTask = Get-ScheduledTask -TaskName "Continuous delivery for Intune"
+if (!($ScheduledTask)) {
+    $User = "SYSTEM"
+    $Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
+    $Trigger = New-ScheduledTaskTrigger -AtLogOn
+    Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -TaskName "Continuous delivery for Intune"
+}
+else {
+    Write-Host "Scheduled Task already exists"
+}
