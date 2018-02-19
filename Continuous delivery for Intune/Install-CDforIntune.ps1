@@ -183,7 +183,7 @@ Remove-Item `$AdvInstConfig -Force
 
 
 `$RegFileConf = `$env:TEMP + "\RegFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/regedit2/Continuous%20delivery%20for%20Intune/Registry/config.json" -OutFile $RegFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Registry/config.json" -OutFile `$RegFileConf
 `$RegFiles = Get-Content `$RegFileConf | ConvertFrom-Json
 
 foreach (`$regfile in `$RegFiles) {

@@ -18,7 +18,7 @@ $Apps = @(
         UninstArgs = "/verysilent"
         appLocURL = "http://sublog.org/storage/audacity-win-2.2.1.exe"
         wrkDir = "C:\Windows\Temp"
-        detection = "C:\Program Files\Audacity\audacity.exe"
+        detection = "C:\Program Files (x86)\Audacity\audacity.exe"
         Mode = "Install"
     }
     
