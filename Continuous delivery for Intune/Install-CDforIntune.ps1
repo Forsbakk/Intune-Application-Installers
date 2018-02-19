@@ -104,7 +104,28 @@ function Install-SC {
             }
         }
     }
+}`
+
+function Install-REGFile {
+    Param(
+        `$URL
+    )
+    `$TempRegFile = `$env:TEMP + "\Temp.reg"
+    Remove-Item `$TempRegFile -Force
+    Invoke-WebRequest -Uri `$URL -OutFile `$TempRegFile
+    `$Arguments = "/s `$TempRegFile"
+    Start-Process "regedit.exe" -ArgumentList `$Arguments -Wait
+    Remove-Item `$TempRegFile -Force
 }
+
+`$RegFileConf = `$env:TEMP + "\RegFileConfig.JSON"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/regedit/Continuous%20delivery%20for%20Intune/Registry/config.json" -OutFile $RegFileConf
+`$RegFiles = Get-Content `$RegFileConf | ConvertFrom-Json
+
+foreach (`$regfile in `$RegFiles) {
+    Install-REGFile -URL `$regfile.URL
+}
+Remove-Item `$RegFileConf -Force
 
 `$AppConfig = `$env:TEMP + "\AppConfig.JSON"
 Invoke-WebRequest -Uri "" -OutFile `$AppConfig
