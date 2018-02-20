@@ -15,7 +15,9 @@ function Install-EXE {
         Write-Host "Starting installation script for `$AppName"
         Write-Host "Detecting previous installations"
     
-        If (!(Test-Path `$detection)) {
+        `$runDetectionRule = Invoke-Expression -Command `$detection
+
+        If (!(`$runDetectionRule -eq `$true)) {
     
             Write-Host "`$AppName is not detected, starting install"
 
@@ -106,16 +108,16 @@ function Install-SC {
     }
 }`
 
-function Install-REGFile {
+function Install-HKLM {
     Param(
         `$URL
     )
-    `$TempRegFile = `$env:TEMP + "\Temp.reg"
-    Remove-Item `$TempRegFile -Force
-    Invoke-WebRequest -Uri `$URL -OutFile `$TempRegFile
-    `$Arguments = "/s `$TempRegFile"
+    `$TempHKLMFile = `$env:TEMP + "\TempHKLM.reg"
+    Remove-Item `$TempHKLMFile -Force | Out-Null
+    Invoke-WebRequest -Uri `$URL -OutFile `$TempHKLMFile
+    `$Arguments = "/s `$TempHKLMFile"
     Start-Process "regedit.exe" -ArgumentList `$Arguments -Wait
-    Remove-Item `$TempRegFile -Force
+    Remove-Item `$TempHKLMFile -Force
 }
 
 function Install-AdvancedApplication {
@@ -182,15 +184,15 @@ foreach (`$AdvInst in `$AdvInstallers) {
 Remove-Item `$AdvInstConfig -Force
 
 
-`$RegFileConf = `$env:TEMP + "\RegFileConfig.JSON"
+`$HKLMFileConf = `$env:TEMP + "\HKLMFileConfig.JSON"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Registry/config.json" -OutFile `$RegFileConf
-`$RegFiles = Get-Content `$RegFileConf | ConvertFrom-Json
+`$HKLMFiles = Get-Content `$HKLMFileConf | ConvertFrom-Json
 
-foreach (`$regfile in `$RegFiles) {
-    Install-REGFile -URL `$regfile.URL
+foreach (`$hklmfile in `$HKLMFiles) {
+    Install-HKLM -URL `$hklmfile.URL
 }
 
-Remove-Item `$RegFileConf -Force
+Remove-Item `$HKLMFileConf -Force
 
 
 `$SCConfig = `$env:TEMP + "\SCConfig.JSON"
