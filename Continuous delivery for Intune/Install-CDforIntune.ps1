@@ -257,6 +257,7 @@ if (!($ScheduledTask)) {
     $Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
     $Trigger = New-ScheduledTaskTrigger -AtLogOn
     Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -TaskName "Continuous delivery for Intune"
+    Start-ScheduledTask -TaskName "Continuous delivery for Intune"
 }
 else {
     Write-Host "Scheduled Task already exists"
