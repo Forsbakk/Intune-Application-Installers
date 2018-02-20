@@ -27,6 +27,15 @@ $Shortcuts = @(
         IconFileandType = "C:\Program Files (x86)\Microsoft Office\root\Office16\protocolhandler.exe, 0"
         Description = "Office 365"
         Mode = "Install"
+    },
+    @{
+        Name = "Word"
+        Type = "lnk"
+        Path = "C:\Program Files (x86)\Microsoft Office\root\Office16\winword.exe"
+        WorkingDir = "C:\Program Files (x86)\Microsoft Office\root\Office16\"
+        IconFileandType = "C:\Program Files (x86)\Microsoft Office\root\Office16\winword.exe, 0"
+        Description = "Word 2016"
+        Mode = "Install"
     }
 )
 $Shortcuts | ConvertTo-Json -Compress | Out-File config.json
