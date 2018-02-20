@@ -25,7 +25,7 @@ function Install-HKCU {
 }
 
 $RegFileConf = $env:TEMP + "\RegFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/HKCU/Continuous%20delivery%20for%20Intune/HKCU/HKCU%20-%20All%20users/config.json" -OutFile $RegFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/HKCU/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile $RegFileConf
 $RegFiles = Get-Content $RegFileConf | ConvertFrom-Json
 
 foreach ($regfile in $RegFiles) {
