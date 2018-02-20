@@ -22,7 +22,7 @@ function Install-REGFile {
 
 
 $RegFileConf = $env:TEMP + "\RegFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/HKCU/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile $RegFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/HKCU/Continuous%20delivery%20for%20Intune/HKCU/HKCU%20-%20Only%20current%20user/config.json" -OutFile $RegFileConf
 $RegFiles = Get-Content $RegFileConf | ConvertFrom-Json
 
 foreach ($regfile in $RegFiles) {
