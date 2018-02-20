@@ -213,7 +213,7 @@ Remove-Item `$AdvInstConfig -Force
 
 
 `$HKLMFileConf = `$env:TEMP + "\HKLMFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/config.json" -OutFile `$RegFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/config.json" -OutFile `$HKLMFileConf
 `$HKLMFiles = Get-Content `$HKLMFileConf | ConvertFrom-Json
 
 foreach (`$hklmfile in `$HKLMFiles) {
@@ -224,7 +224,7 @@ Remove-Item `$HKLMFileConf -Force
 
 
 `$HKCUFileConf = `$env:TEMP + "\HKCUFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile `$RegFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile `$HKCUFileConf
 `$HKCUFiles = Get-Content `$HKCUFileConf | ConvertFrom-Json
 
 foreach (`$hkcufile in `$HKCUFiles) {
