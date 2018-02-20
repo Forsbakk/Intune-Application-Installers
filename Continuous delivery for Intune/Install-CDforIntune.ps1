@@ -170,7 +170,6 @@ function Install-AdvancedApplication {
     }
 
     If (!(`$DetectionRulesCount -eq `$DetectionCounter)) {
-        Write-Host "Not detected"
         foreach (`$dwnload in `$FilesToDwnload) {
             `$URL = `$dwnload | Select-Object -ExpandProperty URL
             `$FileName = `$dwnload | Select-Object -ExpandProperty FileName
