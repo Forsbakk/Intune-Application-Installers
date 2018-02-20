@@ -3,10 +3,11 @@ function Install-HKCU {
         $URL,
         $detection
     )
-
+    write-host $detection
     $runDetectionRule = Invoke-Expression -Command $detection
     
     If (!($runDetectionRule -eq $true)) {
+        Write-Host "not detected"
         $TempHKCUFile = $env:TEMP + "\Temp.reg"
         Remove-Item $TempHKCUFile -Force | Out-Null
         Invoke-WebRequest -Uri $URL -OutFile $TempHKCUFile
@@ -29,7 +30,7 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Applic
 $HKCUFiles = Get-Content $HKCUFileConf | ConvertFrom-Json
 
 foreach ($hkcufile in $HKCUFiles) {
-    Install-HKCU -URL $hkcufile.URL
+    Install-HKCU -URL $hkcufile.URL -detection $hkcufile.detection
 }
 
 Remove-Item $HKCUFileConf -Force
