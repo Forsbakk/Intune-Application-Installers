@@ -7,7 +7,7 @@ $Apps = @(
         UninstArgs = "/verysilent"
         appLocURL = "https://www.mirrorservice.org/sites/ftp.gimp.org/pub/gimp/v2.8/windows/gimp-2.8.22-setup.exe"
         wrkDir = "C:\Windows\Temp"
-        detection = "C:\Program Files\GIMP 2\bin\gimp-2.8.exe"
+        detection = "[bool](Test-Path `"C:\Program Files\GIMP 2\bin\gimp-2.8.exe`")"
         Mode = "Install"
     },
     @{
@@ -18,7 +18,7 @@ $Apps = @(
         UninstArgs = "/verysilent"
         appLocURL = "http://sublog.org/storage/audacity-win-2.2.1.exe"
         wrkDir = "C:\Windows\Temp"
-        detection = "C:\Program Files (x86)\Audacity\audacity.exe"
+        detection = "[bool](Test-Path `"C:\Program Files (x86)\Audacity\audacity.exe`")"
         Mode = "Install"
     }
     
