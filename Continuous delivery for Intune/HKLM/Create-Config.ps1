@@ -5,7 +5,7 @@ $Downloads = @(
     },
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/regfiles/TrustedSites.reg"
-        detection = "[bool]((Get-ItemPropertyValue -Path `"HKLM:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMapKey`" -Name file://skole.i-sone.no) -eq 0)"
+        detection = "[bool]((Test-Path `"HKLM:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\kommune.no\adfs.horten`")"
     }
 )
 $Downloads | ConvertTo-Json -Compress | Out-File config.json
