@@ -5,7 +5,7 @@ $Downloads = @(
     },
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/RemoveClarifyRun.reg"
-        detection = "[bool](!(Get-ItemPropertyValue -Path REGISTRY::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run -Name Clarify))"
+        detection = "[bool](!(Test-Path -Path REGISTRY::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run -Name Clarify))"
     }
 )
 $Downloads | ConvertTo-Json -Compress | Out-File config.json
