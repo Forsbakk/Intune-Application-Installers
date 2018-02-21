@@ -8,7 +8,7 @@ $Installer = "Teams_windows_x64.exe"
 $InstArgs = "-s"
 $Uninstaller = $env:LOCALAPPDATA + "\Microsoft\Teams\Update.exe"
 $UninstArgs = "--uninstall -s"
-$wrkDir = "$PSscriptroot"
+$wrkDir = $PSScriptRoot
 $detection = ((Test-Path ($env:LOCALAPPDATA + "\Microsoft\Teams\Update.exe")) -and (!(Test-Path ($env:LOCALAPPDATA + "\Microsoft\Teams\.dead"))))
 $Mode = "Install" #Install or Uninstall
 

@@ -3,17 +3,17 @@
 
 Contents
 ------
-* Get-WindowsAutoPilotInfo
-  * Get-WindowsAutoPilotInfo.ps1
-    * :heavy_check_mark: *Get info for Windows AutoPilot*
+* Continuous delivery for Intune
+  * :heavy_check_mark: *Continuous delivery of Applications, registry and shortcuts*
 * MDT Deployment for Intune
   * Enable-OOBE.ps1
     * :heavy_check_mark: *Enables OOBE after MDT Task Sequence has completed*
-* Regedit
-  * Install-HKLM
-    * :heavy_check_mark: *Installs REG-files in HKLM*
-* Continuous delivery for Intune
-  * :heavy_check_mark: *Installs EXE-applications and Shortcuts based on JSON-file in the cloud*
+* Get-WindowsAutoPilotInfo
+  * Get-WindowsAutoPilotInfo.ps1
+    * :heavy_check_mark: *Get info for Windows AutoPilot*
+* Special application installers
+  * Install-Teams
+    * :heavy_check_mark: *Deploys Microsoft Teams*
 
 
 Refrence
