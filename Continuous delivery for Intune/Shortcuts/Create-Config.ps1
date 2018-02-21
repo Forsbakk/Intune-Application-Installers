@@ -43,7 +43,7 @@ $Shortcuts = @(
         Path = "C:\Program Files (x86)\Microsoft Office\root\Office16\excel.exe"
         WorkingDir = "C:\Program Files (x86)\Microsoft Office\root\Office16\"
         IconFileandType = "C:\Program Files (x86)\Microsoft Office\root\Office16\excel.exe, 0"
-        Description = "Excel 2016"
+        Description = "Excel 2016" 
         Mode = "Install"
     },
     @{
