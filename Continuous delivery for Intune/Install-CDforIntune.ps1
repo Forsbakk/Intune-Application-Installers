@@ -251,14 +251,17 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 }
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
-$ScheduledTask = Get-ScheduledTask -TaskName "Continuous delivery for Intune"
-if (!($ScheduledTask)) {
-    $User = "SYSTEM"
-    $Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
-    $Trigger = New-ScheduledTaskTrigger -AtLogOn
-    Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -TaskName "Continuous delivery for Intune"
-    Start-ScheduledTask -TaskName "Continuous delivery for Intune"
+$ScheduledTaskName = "Continuous delivery for Intune"
+$ScheduledTaskVersion = "0.0.2"
+$ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
+
+if ($ScheduledTask) {
+    Unregister-ScheduledTask -TaskPath "\" -TaskName $ScheduledTaskName
 }
-else {
-    Write-Host "Scheduled Task already exists"
-}
+
+$User = "SYSTEM"
+$Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
+$Trigger = New-ScheduledTaskTrigger -AtLogOn
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RunOnlyIfNetworkAvailable -StartWhenAvailable
+Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -Settings $Settings -TaskName $ScheduledTaskName -Description $ScheduledTaskVersion
+Start-ScheduledTask -TaskName $ScheduledTaskName
