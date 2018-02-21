@@ -301,7 +301,7 @@ $ScheduledTaskVersion = "0.0.2"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
-    Unregister-ScheduledTask -TaskPath "\" -TaskName $ScheduledTaskName
+    Unregister-ScheduledTask -TaskPath "\" -TaskName $ScheduledTaskName -Confirm:$false
 }
 
 $User = "SYSTEM"
