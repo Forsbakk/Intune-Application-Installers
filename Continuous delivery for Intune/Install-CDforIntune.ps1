@@ -297,7 +297,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.2"
+$ScheduledTaskVersion = "0.0.2.1"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
@@ -307,6 +307,6 @@ if ($ScheduledTask) {
 $User = "SYSTEM"
 $Action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument "-Executionpolicy Bypass -File `"C:\Windows\Scripts\Start-ContinuousDelivery.ps1`""
 $Trigger = New-ScheduledTaskTrigger -AtLogOn
-$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RunOnlyIfNetworkAvailable -StartWhenAvailable
+$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RunOnlyIfNetworkAvailable -StartWhenAvailable -DontStopOnIdleEnd
 Register-ScheduledTask -Action $Action -Trigger $Trigger -User $User -RunLevel Highest -Settings $Settings -TaskName $ScheduledTaskName -Description $ScheduledTaskVersion
 Start-ScheduledTask -TaskName $ScheduledTaskName
