@@ -56,13 +56,13 @@ $Shortcuts = @(
         Mode = "Install"
     },
     @{
-        Name = "Print Kode"
+        Name = "Printkode"
         Type = "lnk"
         Path = "C:\Program Files\internet explorer\iexplore.exe"
         Arguments = "http://10.82.24.82/kode"
         WorkingDir = "C:\Program Files\internet explorer\"
         IconFileandType = "C:\Program Files\internet explorer\iexplore.exe, 0"
-        Description = "Print Kode"
+        Description = "Printkode"
         Mode = "Install"
     }
 )
