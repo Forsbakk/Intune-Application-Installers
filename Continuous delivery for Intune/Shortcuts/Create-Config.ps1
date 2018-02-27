@@ -54,6 +54,16 @@ $Shortcuts = @(
         IconFileandType = "C:\Program Files (x86)\Microsoft Office\root\Office16\powerpnt.exe, 0"
         Description = "PowerPoint 2016"
         Mode = "Install"
+    },
+    @{
+        Name = "Print Kode"
+        Type = "lnk"
+        Path = "C:\Program Files\internet explorer\iexplore.exe"
+        Arguments = "http://10.82.24.82/kode"
+        WorkingDir = "C:\Program Files\internet explorer\"
+        IconFileandType = "C:\Program Files\internet explorer\iexplore.exe, 0"
+        Description = "Print Kode"
+        Mode = "Install"
     }
 )
 $Shortcuts | ConvertTo-Json -Compress | Out-File config.json
