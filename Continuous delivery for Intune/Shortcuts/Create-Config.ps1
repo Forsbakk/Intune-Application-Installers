@@ -68,6 +68,11 @@ $Shortcuts = @(
     @{
         Name = "Print Kode"
         Type = "lnk"
+        Path = "DUMMY"
+        Arguments = "DUMMY"
+        WorkingDir = "DUMMY"
+        IconFileandType = "DUMMY"
+        Description = "DUMMY"
         Mode = "Uninstall"
     }
 )
