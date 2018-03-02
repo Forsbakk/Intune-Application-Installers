@@ -64,6 +64,16 @@ $Shortcuts = @(
         IconFileandType = "C:\Program Files\internet explorer\iexplore.exe, 0"
         Description = "Printkode"
         Mode = "Install"
+    },
+    @{
+        Name = "Print Kode"
+        Type = "lnk"
+        Path = "DUMMY"
+        Arguments = "DUMMY"
+        WorkingDir = "DUMMY"
+        IconFileandType = "DUMMY"
+        Description = "DUMMY"
+        Mode = "Uninstall"
     }
 )
 $Shortcuts | ConvertTo-Json -Compress | Out-File config.json
