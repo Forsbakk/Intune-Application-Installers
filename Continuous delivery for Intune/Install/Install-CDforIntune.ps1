@@ -236,7 +236,7 @@ function Install-AdvancedApplication {
 }
 
 `$AppConfig = `$env:TEMP + "\AppConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
 `$Applications = Get-Content `$AppConfig | ConvertFrom-Json
 
 foreach (`$app in `$Applications) {
@@ -247,7 +247,7 @@ Remove-Item `$AppConfig -Force
 
 
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
 `$AdvInstallers = Get-Content `$AdvInstConfig | ConvertFrom-Json
 
 foreach (`$AdvInst in `$AdvInstallers) {
@@ -258,7 +258,7 @@ Remove-Item `$AdvInstConfig -Force
 
 
 `$HKLMFileConf = `$env:TEMP + "\HKLMFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/HKLM/config.json" -OutFile `$HKLMFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/config.json" -OutFile `$HKLMFileConf
 `$HKLMFiles = Get-Content `$HKLMFileConf | ConvertFrom-Json
 
 foreach (`$hklmfile in `$HKLMFiles) {
@@ -269,7 +269,7 @@ Remove-Item `$HKLMFileConf -Force
 
 
 `$HKCUFileConf = `$env:TEMP + "\HKCUFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile `$HKCUFileConf
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile `$HKCUFileConf
 `$HKCUFiles = Get-Content `$HKCUFileConf | ConvertFrom-Json
 
 foreach (`$hkcufile in `$HKCUFiles) {
@@ -280,7 +280,7 @@ Remove-Item `$HKCUFileConf -Force
 
 
 `$SCConfig = `$env:TEMP + "\SCConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile `$SCConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile `$SCConfig
 `$SCs = Get-Content `$SCConfig | ConvertFrom-Json
 
 foreach (`$sc in `$SCs) {
@@ -297,7 +297,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.2.1.beta"
+$ScheduledTaskVersion = "0.0.2.1"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
