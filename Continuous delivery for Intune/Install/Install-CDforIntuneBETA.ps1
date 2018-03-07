@@ -235,6 +235,25 @@ function Install-AdvancedApplication {
     }
 }
 
+function Invoke-PowerShell {
+    Param(
+        `$Name,
+        `$Command,
+        `$Detection
+    )
+    `$runDetectionRule = Invoke-Expression -Command `$Detection
+    Write-Log -Value "Detecting `$Name" -Severity 1 -Component "Invoke-PowerShell"
+    if (!(`$runDetectionRule -eq `$true)) {
+        `$Arguments = "-Command { `$Command }"
+        Write-Log -Value "Starting powershell.exe with arguments:`$Arguments" -Severity 1 -Component "Invoke-PowerShell"
+        Start-Process -FilePath "powershell.exe" -ArgumentList `$Arguments
+    }
+    else {
+        Write-Log -Value "`$Name is already run" -Severity 1 -Component "Invoke-PowerShell"
+    }
+}
+
+
 `$AppConfig = `$env:TEMP + "\AppConfig.JSON"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
 `$Applications = Get-Content `$AppConfig | ConvertFrom-Json
@@ -288,6 +307,17 @@ foreach (`$sc in `$SCs) {
 }
 
 Remove-Item `$SCConfig -Force
+
+
+`$PSConfig = `$env:TEMP + "\PSConfig.JSON"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile `$PSConfig
+`$PSs = Get-Content `$PSConfig | ConvertFrom-Json
+
+foreach (`$ps in `$PSs) {
+    Invoke-PowerShell -Name `$ps.Name -Command `$ps.Command -Detection `$ps.Detection    
+}
+
+Remove-Item `$PSConfig -Force
 "@
 
 
