@@ -17,7 +17,7 @@ $Downloads = @(
     },
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/regfiles/DisableFirstRunIE.reg"
-        detection = "[bool]((Get-ItemPropertyValue -Path `"HKLM:\Software\Policies\Microsoft\Internet Explorer\Main`" -Name DisableFirstRunCustomize) -eq 0)"
+        detection = "[bool]((Get-ItemPropertyValue -Path `"HKLM:\Software\Microsoft\Internet Explorer\Main`" -Name DisableFirstRunCustomize) -eq 0)"
     }
 )
 $Downloads | ConvertTo-Json -Compress | Out-File config.json
