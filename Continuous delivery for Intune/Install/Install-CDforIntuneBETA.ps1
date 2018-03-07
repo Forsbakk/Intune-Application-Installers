@@ -62,6 +62,52 @@ function Install-EXE {
     }
 }
 
+function Install-MSI {
+    Param(
+        `$AppName,
+        `$MSI,
+        `$wrkDir,
+        `$ArgumentList,
+        `$appLocURL,
+        `$detection,
+        `$Mode
+    )
+    `$runDetectionRule = Invoke-Expression -Command `$detection
+
+    if (`$Mode -eq "Install") {
+        Write-Log -Value "Detecting installation of `$AppName" -Severity 1 -Component "Install-MSI"
+        if (!(`$runDetectionRule -eq `$true)) {
+            Write-Log -Value "`$AppName is not detected; starting install" -Severity 1 -Component "Install-MSI"
+            if (`$ArgumentList.Length -ne 0) {
+                `$Arguments = "/i `$wrkDir\`$MSI /qn `$ArgumentList"
+            }
+            else {
+                `$Arguments = "/i `$wrkDir\`$MSI /qn"
+            }
+            Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$MSI
+            Write-Log -Value "Running msiexec with arguments:`$Arguments" -Severity 1 -Component "Install-MSI"
+            Start-Process -FilePath "msiexec.exe" -ArgumentList `$Arguments -Wait
+            Remove-Item "`$wrkDir\`$MSI" -Force
+        }
+        else {
+            Write-Log -Value "`$AppName is already installed" -Severity 1 -Component "Install-MSI"
+        }
+    }
+    elseif (`$Mode -eq "Uninstall") {
+        Write-Log -Value "Detecting uninstallation of `$AppName" -Severity 1 -Component "Install-MSI"
+        if (`$runDetectionRule -eq `$true){
+            `$Arguments = "/x `$wrkDir\`$MSI /qn"
+            Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$MSI
+            Write-Log -Value "Running msiexec with arguments:`$Arguments" -Severity 1 -Component "Install-MSI"
+            Start-Process -FilePath "msiexec.exe" -ArgumentList `$Arguments -Wait
+            Remove-Item "`$wrkDir\`$MSI" -Force
+        }
+        else {
+            Write-Log -Value "`$AppName is already uninstalled" -Severity 1 -Component "Install-MSI"
+        }    
+    }
+}
+
 function Install-SC {
     [CmdletBinding()]
     Param (
@@ -265,6 +311,17 @@ foreach (`$app in `$Applications) {
 Remove-Item `$AppConfig -Force
 
 
+`$MSIConfig = `$env:TEMP + "\MSIConfig.JSON"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/MSI/config.json" -OutFile `$MSIConfig
+`$MSIs = Get-Content `$MSIConfig | ConvertFrom-Json
+
+foreach (`$MSI in `$MSIs) {
+    Install-MSI -AppName `$MSI.AppName -MSI `$MSI.MSI -wrkDir `$MSI.wrkDir -ArgumentList `$MSI.ArgumentList -appLocURL `$MSI.appLocURL -detection `$MSI.detection -Mode `$MSI.Mode 
+}
+
+Remove-Item `$MSIConfig -Force
+
+
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
 `$AdvInstallers = Get-Content `$AdvInstConfig | ConvertFrom-Json
@@ -327,7 +384,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.3.1.beta"
+$ScheduledTaskVersion = "0.0.4.beta"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
