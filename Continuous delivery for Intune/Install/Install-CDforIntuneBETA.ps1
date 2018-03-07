@@ -327,7 +327,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.2.1.beta"
+$ScheduledTaskVersion = "0.0.3.beta"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
