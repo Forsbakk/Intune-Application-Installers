@@ -235,6 +235,21 @@ function Install-AdvancedApplication {
     }
 }
 
+
+`$SerialNumber = Get-WmiObject -Class Win32_bios | Select-Object -ExpandProperty SerialNumber
+`$Manufacturer = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty Manufacturer
+If (`$Manufacturer -eq "Acer") {
+    `$NewName = `$SerialNumber.Substring(10,12)-replace " "    
+}
+Else {
+    `$NewName = `$SerialNumber.Substring(0,15)-replace " "
+}
+`$CurrentName = `$env:COMPUTERNAME
+If (!(`$CurrentName -eq `$NewName)) {
+    Rename-Computer -ComputerName `$CurrentName -NewName `$NewName
+}
+
+
 `$AppConfig = `$env:TEMP + "\AppConfig.JSON"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
 `$Applications = Get-Content `$AppConfig | ConvertFrom-Json
