@@ -303,7 +303,8 @@ function Invoke-PowerShell {
 `$SerialNumber = Get-WmiObject -Class Win32_bios | Select-Object -ExpandProperty SerialNumber
 `$Manufacturer = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty Manufacturer
 If (`$Manufacturer -eq "Acer") {
-    `$NewName = `$SerialNumber.Substring(10,12)-replace " "    
+    `$NewName = `$SerialNumber.Substring(10,12)-replace " "
+    `$NewName = "A" + `$NewName
 }
 Else {
     `$NewName = `$SerialNumber.Substring(0,15)-replace " "
