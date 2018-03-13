@@ -18,6 +18,12 @@ function Write-Log {
     }
 }
 
+function Install-Teams {
+    `$ChocoBin = `$env:ProgramData + "\Chocolatey\bin\choco.exe"
+    `$User = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty UserName
+    Start-Process -FilePath `$ChocoBin -ArgumentList "install microsoft-teams -y" -Wait -Credential `$User
+}
+
 function Invoke-Chocolatey {
     `$ChocoConfFile = "C:\Windows\Temp\ChocoConf.json"
     `$ChocoBin = `$env:ProgramData + "\Chocolatey\bin\choco.exe"
@@ -63,6 +69,7 @@ if (!(Test-Path -Path `$ChocoBin)) {
 }
 
 Invoke-Chocolatey
+Install-Teams
 "@
 
 If (!(Test-Path "C:\Windows\Scripts")) {

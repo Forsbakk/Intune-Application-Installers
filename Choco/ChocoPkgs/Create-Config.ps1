@@ -16,10 +16,6 @@ $ChocoPkgs = @(
         Mode = "install"
     },
     @{
-        Name = "microsoft-teams"
-        Mode = "install"
-    },
-    @{
         Name = "visualstudiocode"
         Mode = "install"
     }
