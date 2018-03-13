@@ -14,10 +14,6 @@ $ChocoPkgs = @(
     @{
         Name = "audacity"
         Mode = "install"
-    },
-    @{
-        Name = "visualstudiocode"
-        Mode = "install"
     }
 )
 $ChocoPkgs | ConvertTo-Json -Compress | Out-File ChocoConf.json
