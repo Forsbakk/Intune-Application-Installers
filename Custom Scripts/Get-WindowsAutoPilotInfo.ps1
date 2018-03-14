@@ -12,7 +12,7 @@ function Get-WindowsAutoPilotInfo {
     )
     ForEach ($Computer in $ComputerName) {
         $Serial = Get-WmiObject -ComputerName $Computer -Class Win32_BIOS | Select-Object -ExpandProperty SerialNumber
-        $ProductID = (Get-WmiObject -ComputerName $Computer -Class SoftwareLicensingProduct -Filter "ProductKeyChannel!=NULL and LicenseDependsOn=NULL AND ApplicationID='55c92734-d682-4d71-983e-d6ec3f16059f'").ProductKeyID2.Substring(0,17).Replace("-","").TrimStart("0")
+        $ProductID = (Get-WmiObject -ComputerName $Computer -Class SoftwareLicensingProduct -Filter "ProductKeyChannel!=NULL and LicenseDependsOn=NULL AND ApplicationID='55c92734-d682-4d71-983e-d6ec3f16059f'").ProductKeyID2
         $HardwareHash = Get-WmiObject -ComputerName $Computer -Namespace "root/cimv2/mdm/dmmap" -Class MDM_DevDetail_Ext01 -Filter "InstanceID='Ext' AND ParentID='./DevDetail'" | Select-Object -ExpandProperty DeviceHardwareData
     
         $Properties = @{
