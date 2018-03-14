@@ -18,93 +18,50 @@ function Write-Log {
     }
 }
 
-function Install-EXE {
+function Invoke-Chocolatey {
     Param(
-        `$AppName,
-        `$Installer,
-        `$InstArgs,
-        `$Uninstaller,
-        `$UninstArgs,
-        `$appLocURL,
-        `$wrkDir,
-        `$detection,
-        `$Mode
+        `$Branch = "master"
     )
-    If (`$mode -eq "Install") {
-        Write-Log -Value "Detecting installation of `$AppName" -Severity 1 -Component "Install-EXE"
-    
-        `$runDetectionRule = Invoke-Expression -Command `$detection
 
-        If (!(`$runDetectionRule -eq `$true)) {
-    
-            Write-Log -Value "`$AppName is not detected; starting installation" -Severity 1 -Component "Install-EXE"
+    `$ChocoConfFile = "C:\Windows\Temp\ChocoConf.json"
+    `$ChocoBin = `$env:ProgramData + "\Chocolatey\bin\choco.exe"
 
-            Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$Installer
-            Start-Process -FilePath `$wrkDir\`$Installer -ArgumentList `$InstArgs -Wait
-            Remove-Item -Path `$wrkDir\`$Installer -Force
-            If (!(Test-Path `$detection)) {
-                Write-Log -Value "`$AppName is not detected after installation" -Severity 3 -Component "Install-EXE"
-            }
+    if (!(Test-Path -Path `$ChocoBin)) {
+        Write-Log -Value "`$ChocoBin not detected; starting installation of chocolatey" -Severity 1 -Component "Invoke-Chocolatey"
+        try {
+            Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
         }
-        Else {
-            Write-Log -Value "`$AppName is already installed; skipping" -Severity 1 -Component "Install-EXE"
+        catch {
+            Write-Log -Value "Failed to install chocolatey" -Severity 3 -Component "Invoke-Chocolatey"
         }
     }
-    elseif (`$mode -eq "Uninstall") {
-        If (Test-Path `$Uninstaller) {
-            Write-Log -Value "Starting uninstallation of `$AppName" -Severity 1 -Component "Install-EXE"
-            Start-Process `$Uninstaller -ArgumentList `$UninstArgs -Wait
-            Write-Log -Value "Uninstallation of `$AppName complete" -Severity 1 -Component "Install-EXE"
-        }
-        Else {
-            Write-Log -Value "Can not find `$AppName uninstaller; aborting" -Severity 3 -Component "Install-EXE"
-        }
-    }
-}
 
-function Install-MSI {
-    Param(
-        `$AppName,
-        `$MSI,
-        `$wrkDir,
-        `$ArgumentList,
-        `$appLocURL,
-        `$detection,
-        `$Mode
-    )
-    `$runDetectionRule = Invoke-Expression -Command `$detection
-
-    if (`$Mode -eq "Install") {
-        Write-Log -Value "Detecting installation of `$AppName" -Severity 1 -Component "Install-MSI"
-        if (!(`$runDetectionRule -eq `$true)) {
-            Write-Log -Value "`$AppName is not detected; starting install" -Severity 1 -Component "Install-MSI"
-            if (`$ArgumentList.Length -ne 0) {
-                `$Arguments = "/i `$wrkDir\`$MSI /qn `$ArgumentList"
-            }
-            else {
-                `$Arguments = "/i `$wrkDir\`$MSI /qn"
-            }
-            Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$MSI
-            Write-Log -Value "Running msiexec with arguments:`$Arguments" -Severity 1 -Component "Install-MSI"
-            Start-Process -FilePath "msiexec.exe" -ArgumentList `$Arguments -Wait
-            Remove-Item "`$wrkDir\`$MSI" -Force
-        }
-        else {
-            Write-Log -Value "`$AppName is already installed" -Severity 1 -Component "Install-MSI"
-        }
+    Write-Log -Value "Upgrading chocolatey and all existing packages" -Severity 1 -Component "Invoke-Chocolatey"
+    try {
+        Invoke-Expression "cmd /c `$ChocoBin upgrade all -y" -ErrorAction Stop
     }
-    elseif (`$Mode -eq "Uninstall") {
-        Write-Log -Value "Detecting uninstallation of `$AppName" -Severity 1 -Component "Install-MSI"
-        if (`$runDetectionRule -eq `$true){
-            `$Arguments = "/x `$wrkDir\`$MSI /qn"
-            Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$MSI
-            Write-Log -Value "Running msiexec with arguments:`$Arguments" -Severity 1 -Component "Install-MSI"
-            Start-Process -FilePath "msiexec.exe" -ArgumentList `$Arguments -Wait
-            Remove-Item "`$wrkDir\`$MSI" -Force
+    catch {
+        Write-Log -Value "Failed to upgrade chocolatey and all existing packages" -Severity 3 -Component "Invoke-Chocolatey"
+    }
+
+    Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-Chocolatey"
+    try {
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/`$Branch/Continuous%20delivery%20for%20Intune/Choco/config.json" -OutFile `$ChocoConfFile
+    }
+    catch {
+        Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-Chocolatey"
+        throw
+    }
+
+    `$ChocoConf = Get-Content -Path `$ChocoConfFile | ConvertFrom-Json
+    ForEach (`$ChockoPkg in `$ChocoConf) {
+        Write-Log -Value "Running `$(`$ChockoPkg.Mode) on `$(`$ChockoPkg.Name)" -Severity 1 -Component "Invoke-Chocolatey"
+        try {
+            Invoke-Expression "cmd /c `$ChocoBin `$(`$ChockoPkg.Mode) `$(`$ChockoPkg.Name) -y" -ErrorAction Stop
         }
-        else {
-            Write-Log -Value "`$AppName is already uninstalled" -Severity 1 -Component "Install-MSI"
-        }    
+        catch {
+            Write-Log -Value "Failed to run `$(`$ChockoPkg.Mode) on `$(`$ChockoPkg.Name)" -Severity 3 -Component "Invoke-Chocolatey"
+        }
     }
 }
 
@@ -314,27 +271,7 @@ If (!(`$CurrentName -eq `$NewName)) {
     Rename-Computer -ComputerName `$CurrentName -NewName `$NewName
 }
 
-
-`$AppConfig = `$env:TEMP + "\AppConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
-`$Applications = Get-Content `$AppConfig | ConvertFrom-Json
-
-foreach (`$app in `$Applications) {
-    Install-EXE -AppName `$app.Name -Installer `$app.Installer -InstArgs `$app.InstArgs -Uninstaller `$app.Uninstaller -UninstArgs `$app.UninstArgs -appLocURL `$app.appLocURL -wrkDir `$app.wrkDir -detection `$app.detection -Mode `$app.Mode
-}
-
-Remove-Item `$AppConfig -Force
-
-
-`$MSIConfig = `$env:TEMP + "\MSIConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/beta/Continuous%20delivery%20for%20Intune/MSI/config.json" -OutFile `$MSIConfig
-`$MSIs = Get-Content `$MSIConfig | ConvertFrom-Json
-
-foreach (`$MSI in `$MSIs) {
-    Install-MSI -AppName `$MSI.AppName -MSI `$MSI.MSI -wrkDir `$MSI.wrkDir -ArgumentList `$MSI.ArgumentList -appLocURL `$MSI.appLocURL -detection `$MSI.detection -Mode `$MSI.Mode 
-}
-
-Remove-Item `$MSIConfig -Force
+Invoke-Chocolatey -Branch "beta"
 
 
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
@@ -399,7 +336,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.5.1.beta"
+$ScheduledTaskVersion = "0.0.6.beta"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {

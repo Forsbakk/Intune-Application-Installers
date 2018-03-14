@@ -18,46 +18,49 @@ function Write-Log {
     }
 }
 
-function Install-EXE {
+function Invoke-Chocolatey {
     Param(
-        `$AppName,
-        `$Installer,
-        `$InstArgs,
-        `$Uninstaller,
-        `$UninstArgs,
-        `$appLocURL,
-        `$wrkDir,
-        `$detection,
-        `$Mode
+        `$Branch = "master"
     )
-    If (`$mode -eq "Install") {
-        Write-Log -Value "Detecting installation of `$AppName" -Severity 1 -Component "Install-EXE"
-    
-        `$runDetectionRule = Invoke-Expression -Command `$detection
 
-        If (!(`$runDetectionRule -eq `$true)) {
-    
-            Write-Log -Value "`$AppName is not detected; starting installation" -Severity 1 -Component "Install-EXE"
+    `$ChocoConfFile = "C:\Windows\Temp\ChocoConf.json"
+    `$ChocoBin = `$env:ProgramData + "\Chocolatey\bin\choco.exe"
 
-            Invoke-WebRequest -Uri `$appLocURL -OutFile `$wrkDir\`$Installer
-            Start-Process -FilePath `$wrkDir\`$Installer -ArgumentList `$InstArgs -Wait
-            Remove-Item -Path `$wrkDir\`$Installer -Force
-            If (!(Test-Path `$detection)) {
-                Write-Log -Value "`$AppName is not detected after installation" -Severity 3 -Component "Install-EXE"
-            }
+    if (!(Test-Path -Path `$ChocoBin)) {
+        Write-Log -Value "`$ChocoBin not detected; starting installation of chocolatey" -Severity 1 -Component "Invoke-Chocolatey"
+        try {
+            Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
         }
-        Else {
-            Write-Log -Value "`$AppName is already installed; skipping" -Severity 1 -Component "Install-EXE"
+        catch {
+            Write-Log -Value "Failed to install chocolatey" -Severity 3 -Component "Invoke-Chocolatey"
         }
     }
-    elseif (`$mode -eq "Uninstall") {
-        If (Test-Path `$Uninstaller) {
-            Write-Log -Value "Starting uninstallation of `$AppName" -Severity 1 -Component "Install-EXE"
-            Start-Process `$Uninstaller -ArgumentList `$UninstArgs -Wait
-            Write-Log -Value "Uninstallation of `$AppName complete" -Severity 1 -Component "Install-EXE"
+
+    Write-Log -Value "Upgrading chocolatey and all existing packages" -Severity 1 -Component "Invoke-Chocolatey"
+    try {
+        Invoke-Expression "cmd /c `$ChocoBin upgrade all -y" -ErrorAction Stop
+    }
+    catch {
+        Write-Log -Value "Failed to upgrade chocolatey and all existing packages" -Severity 3 -Component "Invoke-Chocolatey"
+    }
+
+    Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-Chocolatey"
+    try {
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/`$Branch/Continuous%20delivery%20for%20Intune/Choco/config.json" -OutFile `$ChocoConfFile
+    }
+    catch {
+        Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-Chocolatey"
+        throw
+    }
+
+    `$ChocoConf = Get-Content -Path `$ChocoConfFile | ConvertFrom-Json
+    ForEach (`$ChockoPkg in `$ChocoConf) {
+        Write-Log -Value "Running `$(`$ChockoPkg.Mode) on `$(`$ChockoPkg.Name)" -Severity 1 -Component "Invoke-Chocolatey"
+        try {
+            Invoke-Expression "cmd /c `$ChocoBin `$(`$ChockoPkg.Mode) `$(`$ChockoPkg.Name) -y" -ErrorAction Stop
         }
-        Else {
-            Write-Log -Value "Can not find `$AppName uninstaller; aborting" -Severity 3 -Component "Install-EXE"
+        catch {
+            Write-Log -Value "Failed to run `$(`$ChockoPkg.Mode) on `$(`$ChockoPkg.Name)" -Severity 3 -Component "Invoke-Chocolatey"
         }
     }
 }
@@ -235,15 +238,40 @@ function Install-AdvancedApplication {
     }
 }
 
-`$AppConfig = `$env:TEMP + "\AppConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Applications/config.json" -OutFile `$AppConfig
-`$Applications = Get-Content `$AppConfig | ConvertFrom-Json
-
-foreach (`$app in `$Applications) {
-    Install-EXE -AppName `$app.Name -Installer `$app.Installer -InstArgs `$app.InstArgs -Uninstaller `$app.Uninstaller -UninstArgs `$app.UninstArgs -appLocURL `$app.appLocURL -wrkDir `$app.wrkDir -detection `$app.detection -Mode `$app.Mode
+function Invoke-PowerShell {
+    Param(
+        `$Name,
+        `$Command,
+        `$Detection
+    )
+    `$runDetectionRule = Invoke-Expression -Command `$Detection
+    Write-Log -Value "Detecting `$Name" -Severity 1 -Component "Invoke-PowerShell"
+    if (!(`$runDetectionRule -eq `$true)) {
+        `$Arguments = "-Command `$Command"
+        Write-Log -Value "Starting powershell.exe with arguments:`$Arguments" -Severity 1 -Component "Invoke-PowerShell"
+        Start-Process -FilePath "powershell.exe" -ArgumentList `$Arguments
+    }
+    else {
+        Write-Log -Value "`$Name is already run" -Severity 1 -Component "Invoke-PowerShell"
+    }
 }
 
-Remove-Item `$AppConfig -Force
+
+`$SerialNumber = Get-WmiObject -Class Win32_bios | Select-Object -ExpandProperty SerialNumber
+`$Manufacturer = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty Manufacturer
+If (`$Manufacturer -eq "Acer") {
+    `$NewName = `$SerialNumber.Substring(10,12)-replace " "
+    `$NewName = "A" + `$NewName
+}
+Else {
+    `$NewName = `$SerialNumber.Substring(0,15)-replace " "
+}
+`$CurrentName = `$env:COMPUTERNAME
+If (!(`$CurrentName -eq `$NewName)) {
+    Rename-Computer -ComputerName `$CurrentName -NewName `$NewName
+}
+
+Invoke-Chocolatey
 
 
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
@@ -288,6 +316,17 @@ foreach (`$sc in `$SCs) {
 }
 
 Remove-Item `$SCConfig -Force
+
+
+`$PSConfig = `$env:TEMP + "\PSConfig.JSON"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile `$PSConfig
+`$PSs = Get-Content `$PSConfig | ConvertFrom-Json
+
+foreach (`$ps in `$PSs) {
+    Invoke-PowerShell -Name `$ps.Name -Command `$ps.Command -Detection `$ps.Detection    
+}
+
+Remove-Item `$PSConfig -Force
 "@
 
 
@@ -297,7 +336,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.2.1"
+$ScheduledTaskVersion = "0.0.6"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
