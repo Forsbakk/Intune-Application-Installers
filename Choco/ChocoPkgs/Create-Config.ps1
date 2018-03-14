@@ -18,6 +18,10 @@ $ChocoPkgs = @(
     @{
         Name = "visualstudiocode"
         Mode = "install"
+    },
+    @{
+        Name = "notepadplusplus"
+        Mode = "install"
     }
 )
 $ChocoPkgs | ConvertTo-Json -Compress | Out-File ChocoConf.json
