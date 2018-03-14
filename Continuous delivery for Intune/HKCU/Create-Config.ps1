@@ -5,7 +5,7 @@ $Downloads = @(
     },
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/RemoveClarifyRun.reg"
-        detection = "[bool](!(Test-Path -Path REGISTRY::HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\Run\Clarify))"
+        detection = "[bool](`$False)"
     },
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/TrustedSites.reg"
@@ -14,6 +14,14 @@ $Downloads = @(
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/EnableADAL.reg"
         detection = "[bool]((Get-ItemPropertyValue -Path REGISTRY::HKEY_USERS\.DEFAULT\Software\Microsoft\OneDrive -Name EnableADAL) -eq 1)"
+    },
+    @{
+        URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/ConnectionsTab.reg"
+        detection = "[bool]((Get-ItemPropertyValue -Path REGISTRY::HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Internet Explorer\Control Panel -Name ConnectionsTab) -eq 1)"
+    }
+    @{
+        URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/ConnectionsTab.reg"
+        detection = "[bool]((Get-ItemPropertyValue -Path REGISTRY::HKEY_USERS\.DEFAULT\Software\Policies\Microsoft\Internet Explorer\Control Panel -Name ConnectionsTab) -eq 1)"
     },
     @{
         URL = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/regfiles/ConnectionsTab.reg"
