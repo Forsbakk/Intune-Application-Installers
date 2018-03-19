@@ -158,3 +158,56 @@ function Install-SC {
         }
     }
 }
+
+function Install-HKLM {
+    Param(
+        $URL,
+        $detection
+    )
+    Write-Log -Value "Starting detection of HKLM settings; $URL" -Severity 1 -Component "Install-HKLM"
+    $runDetectionRule = Invoke-Expression -Command $detection
+    If (!($runDetectionRule -eq $true)) {
+        Write-Log -Value "HKLM settings not detected; starting install; $URL" -Severity 1 -Component "Install-HKLM"
+        $TempHKLMFile = $env:TEMP + "\TempHKLM.reg"
+        Remove-Item $TempHKLMFile -Force | Out-Null
+        Invoke-WebRequest -Uri $URL -OutFile $TempHKLMFile
+        $Arguments = "/s $TempHKLMFile"
+        Start-Process "regedit.exe" -ArgumentList $Arguments -Wait
+        Remove-Item $TempHKLMFile -Force
+        Write-Log -Value "HKLM file installed; $URL" -Severity 1 -Component "Install-HKLM"
+    }
+    else {
+        Write-Log -Value "HKLM settings detected; skipping; $URL" -Severity 1 -Component "Install-HKLM"
+    }
+}
+
+function Install-HKCU {
+    Param(
+        $URL,
+        $detection
+    )
+    Write-Log -Value "Starting detection of HKCU settings; $URL" -Severity 1 -Component "Install-HKCU"
+    $runDetectionRule = Invoke-Expression -Command $detection
+    
+    If (!($runDetectionRule -eq $true)) {
+        Write-Log -Value "HKCU settings not detected; starting install; $URL" -Severity 1 -Component "Install-HKCU"
+        $TempHKCUFile = $env:TEMP + "\TempHKCU.reg"
+        Remove-Item $TempHKCUFile -Force | Out-Null
+        Invoke-WebRequest -Uri $URL -OutFile $TempHKCUFile
+        $regfile = Get-Content $TempHKCUFile
+        $hives = Get-ChildItem -Path REGISTRY::HKEY_USERS | Select-Object -ExpandProperty Name
+        foreach ($hive in $hives) {
+            if (!($hive -like "*_Classes")) {
+                $newregfile = $regfile -replace "HKEY_CURRENT_USER",$hive
+                Set-Content -Path $TempHKCUFile -Value $newregfile
+                $Arguments = "/s $TempHKCUFile"
+                Start-Process "regedit.exe" -ArgumentList $Arguments -Wait
+            }
+        }
+        Remove-Item $TempHKCUFile -Force
+        Write-Log -Value "HKCU file installed; $URL" -Severity 1 -Component "Install-HKCU"
+    }
+    else {
+        Write-Log -Value "HKCU settings detected; skipping; $URL" -Severity 1 -Component "Install-HKCU"
+    }
+}
