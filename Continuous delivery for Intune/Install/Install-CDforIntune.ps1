@@ -1,4 +1,6 @@
 $Script = @"
+`$Branch = "master"
+
 function Write-Log {
     Param(
         [string]`$Value,
@@ -65,127 +67,134 @@ function Invoke-Chocolatey {
     }
 }
 
-function Install-SC {
-    [CmdletBinding()]
-    Param (
-        [Parameter(Mandatory=`$true)]
-        [string]`$SCName,
-        [Parameter(Mandatory=`$true)]
-        [ValidateSet("url","lnk")]
-        [string]`$SCType,
-        [Parameter(Mandatory=`$true)]
-        [string]`$Path,
-        [string]`$WorkingDir = `$null,
-        [string]`$Arguments = `$null,
-        [string]`$IconFileandType = `$null,
-        [string]`$Description = `$null,
-        [string]`$Mode
+function Invoke-SC {
+    Param(
+        `$Branch = "master"
     )
-    If (`$Mode -eq "Uninstall") {
-        Write-Log -Value "Starting deletion of `$SCName" -Severity 1 -Component "Install-SC"
-        `$FileToDelete = `$env:PUBLIC + "\Desktop\`$SCName.`$SCType"
-        Remove-Item `$FileToDelete -Force
-        Write-Log -Value "`$SCName deleted" -Severity 1 -Component "Install-SC"
+
+    `$SCConfFile = "C:\Windows\Temp\SCConf.json"
+
+    Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-SC"
+    try {
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/`$Branch/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile `$SCConfFile
     }
-    Elseif (`$Mode -eq "Install") {
-        Write-Log -Value "Starting detection of `$SCName" -Severity 1 -Component "Install-SC"
-        If (`$SCType -eq "lnk") {
-            `$verPath = `$WorkingDir + "\" + `$Path
-            `$Detection = Test-Path `$verPath
-            If (!(`$Detection)) { 
-                `$verPath = `$Path
+    catch {
+        Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-SC"
+        throw
+    }
+
+    `$SCConf = Get-Content -Path `$SCConfFile | ConvertFrom-Json
+    ForEach (`$SC in `$SCConf) {
+        If (`$SC.Mode -eq "Uninstall") {
+            Write-Log -Value "Starting deletion of `$(`$SC.Name)" -Severity 1 -Component "Invoke-SC"
+            `$FileToDelete = `$env:PUBLIC + "\Desktop\`$(`$SC.Name).`$(`$SC.Type)"
+            Remove-Item `$FileToDelete -Force
+            Write-Log -Value "`$(`$SC.Name) deleted" -Severity 1 -Component "Invoke-SC"
+        }
+        Elseif (`$SC.Mode -eq "Install") {
+            Write-Log -Value "Starting detection of `$(`$SC.Name)" -Severity 1 -Component "Invoke-SC"
+            If (`$SC.Type -eq "lnk") {
+                `$verPath = `$SC.WorkingDir + "\" + `$SC.Path
                 `$Detection = Test-Path `$verPath
                 If (!(`$Detection)) { 
-                    `$verPath = `$Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*`$)'
-                    `$verPath = `$verPath[0] -replace '"',''
+                    `$verPath = `$Path
                     `$Detection = Test-Path `$verPath
+                    If (!(`$Detection)) { 
+                        `$verPath = `$Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*`$)'
+                        `$verPath = `$verPath[0] -replace '"',''
+                        `$Detection = Test-Path `$verPath
+                    }
                 }
             }
-        }
-        Else {
-            `$Detection = "url-file"
-        }
-        If (!(`$Detection)) {
-            Write-Log -Value "Can not detect `$SCName endpoint; skipping" -Severity 2 -Component "Install-SC"
-        }
-        else {
-            If (Test-Path (`$env:PUBLIC + "\Desktop\`$SCName.`$SCType")) {
-                Write-Log -Value "`$SCName already exists; skipping" -Severity 1 -Component "Install-SC"
+            Else {
+                `$Detection = "url-file"
+            }
+            If (!(`$Detection)) {
+                Write-Log -Value "Can not detect `$(`$SC.Name) endpoint; skipping" -Severity 2 -Component "Invoke-SC"
             }
             else {
-                Write-Log -Value "`$SCName is not detected; starting installation" -Severity 1 -Component "Install-SC"
-                `$ShellObj = New-Object -ComObject ("WScript.Shell")
-                `$SC = `$ShellObj.CreateShortcut(`$env:PUBLIC + "\Desktop\`$SCName.`$SCType")
-                `$SC.TargetPath="`$Path"
-                If (`$WorkingDir.Length -ne 0) {
-                    `$SC.WorkingDirectory = "`$WorkingDir";
+                If (Test-Path (`$env:PUBLIC + "\Desktop\`$(`$SC.Name).`$(`$SC.Type)")) {
+                    Write-Log -Value "`$(`$SC.Name) already exists; skipping" -Severity 1 -Component "Invoke-SC"
                 }
-                If (`$Arguments.Length -ne 0) {
-                    `$SC.Arguments = "`$Arguments";
+                else {
+                    Write-Log -Value "`$(`$SC.Name) is not detected; starting installation" -Severity 1 -Component "Invoke-SC"
+                    `$ShellObj = New-Object -ComObject ("WScript.Shell")
+                    `$Shortcut = `$ShellObj.CreateShortcut(`$env:PUBLIC + "\Desktop\`$(`$SC.Name).`$(`$SC.Type)")
+                    `$Shortcut.TargetPath="`$(`$SC.Path)"
+                    If (`$SC.WorkingDir) {
+                        `$Shortcut.WorkingDirectory = "`$(`$SC.WorkingDir)";
+                    }
+                    If (`$SC.Arguments) {
+                        `$Shortcut.Arguments = "`$(`$SC.Arguments)";
+                    }
+                    If (`$SC.IconFileandType) {
+                        `$Shortcut.IconLocation = "`$(`$SC.IconFileandType)";
+                    }
+                    If (`$SC.Description) {
+                        `$Shortcut.Description  = "`$(`$SC.Description)";
+                    }
+                    `$Shortcut.Save()
+                    Write-Log -Value "`$(`$SC.Name) is installed" -Severity 1 -Component "Invoke-SC"
                 }
-                If (`$IconFileandType.Length -ne 0) {
-                    `$SC.IconLocation = "`$IconFileandType";
-                }
-                If (`$Description.Length -ne 0) {
-                    `$SC.Description  = "`$Description";
-                }
-                `$SC.Save()
-                Write-Log -Value "`$SCName is installed" -Severity 1 -Component "Install-SC"
             }
         }
-    }
-}`
-
-function Install-HKLM {
-    Param(
-        `$URL,
-        `$detection
-    )
-    Write-Log -Value "Starting detection of HKLM settings; `$URL" -Severity 1 -Component "Install-HKLM"
-    `$runDetectionRule = Invoke-Expression -Command `$detection
-    If (!(`$runDetectionRule -eq `$true)) {
-        Write-Log -Value "HKLM settings not detected; starting install; `$URL" -Severity 1 -Component "Install-HKLM"
-        `$TempHKLMFile = `$env:TEMP + "\TempHKLM.reg"
-        Remove-Item `$TempHKLMFile -Force | Out-Null
-        Invoke-WebRequest -Uri `$URL -OutFile `$TempHKLMFile
-        `$Arguments = "/s `$TempHKLMFile"
-        Start-Process "regedit.exe" -ArgumentList `$Arguments -Wait
-        Remove-Item `$TempHKLMFile -Force
-        Write-Log -Value "HKLM file installed; `$URL" -Severity 1 -Component "Install-HKLM"
-    }
-    else {
-        Write-Log -Value "HKLM settings detected; skipping; `$URL" -Severity 1 -Component "Install-HKLM"
     }
 }
 
-function Install-HKCU {
-    Param(
-        `$URL,
-        `$detection
+function Invoke-Regedit {
+    Param (
+        `$Branch = "master"
     )
-    Write-Log -Value "Starting detection of HKCU settings; `$URL" -Severity 1 -Component "Install-HKCU"
-    `$runDetectionRule = Invoke-Expression -Command `$detection
+
+    `$RegeditFileConf = "C:\Windows\Temp\RegeditFileConfig.json"
+
+    Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-Regedit"
+    try {
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/`$Branch/Continuous%20delivery%20for%20Intune/Regedit/config.json" -OutFile `$RegeditFileConf
+    }
+    catch {
+        Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-Regedit"
+        throw
+    }
     
-    If (!(`$runDetectionRule -eq `$true)) {
-        Write-Log -Value "HKCU settings not detected; starting install; `$URL" -Severity 1 -Component "Install-HKCU"
-        `$TempHKCUFile = `$env:TEMP + "\TempHKCU.reg"
-        Remove-Item `$TempHKCUFile -Force | Out-Null
-        Invoke-WebRequest -Uri `$URL -OutFile `$TempHKCUFile
-        `$regfile = Get-Content `$TempHKCUFile
-        `$hives = Get-ChildItem -Path REGISTRY::HKEY_USERS | Select-Object -ExpandProperty Name
-        foreach (`$hive in `$hives) {
-            if (!(`$hive -like "*_Classes")) {
-                `$newregfile = `$regfile -replace "HKEY_CURRENT_USER",`$hive
-                Set-Content -Path `$TempHKCUFile -Value `$newregfile
-                `$Arguments = "/s `$TempHKCUFile"
+    `$regfiles = Get-Content -Path `$RegeditFileConf | ConvertFrom-Json
+    ForEach (`$regfile in `$regfiles) {
+        Write-Log -Value "Starting detection of Regedit settings; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+        `$runDetectionRule = Invoke-Expression -Command `$regfile.detection
+        If (!(`$runDetectionRule -eq `$true)) {
+            Write-Log -Value "Regedit settings not detected; starting install; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+            if (`$regfile.Type -eq "HKLM") {
+                Write-Log -Value "Regedit settings is HKLM; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+                `$TempHKLMFile = `$env:TEMP + "\TempHKLM.reg"
+                Remove-Item `$TempHKLMFile -Force -ErrorAction Ignore
+                Invoke-WebRequest -Uri `$(`$regfile.URL) -OutFile `$TempHKLMFile
+                `$Arguments = "/s `$TempHKLMFile"
                 Start-Process "regedit.exe" -ArgumentList `$Arguments -Wait
+                Remove-Item `$TempHKLMFile -Force
+                Write-Log -Value "HKLM file installed; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+            }
+            elseif (`$regfile.Type -eq "HKCU") {
+                Write-Log -Value "Regedit settings is HKCU; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+                `$TempHKCUFile = `$env:TEMP + "\TempHKCU.reg"
+                Remove-Item `$TempHKCUFile -Force -ErrorAction Ignore
+                Invoke-WebRequest -Uri `$(`$regfile.URL) -OutFile `$TempHKCUFile
+                `$regfile = Get-Content `$TempHKCUFile
+                `$hives = Get-ChildItem -Path REGISTRY::HKEY_USERS | Select-Object -ExpandProperty Name
+                foreach (`$hive in `$hives) {
+                    if (!(`$hive -like "*_Classes")) {
+                        `$newregfile = `$regfile -replace "HKEY_CURRENT_USER",`$hive
+                        Set-Content -Path `$TempHKCUFile -Value `$newregfile
+                        `$Arguments = "/s `$TempHKCUFile"
+                        Start-Process "regedit.exe" -ArgumentList `$Arguments -Wait
+                    }
+                }
+                Remove-Item `$TempHKCUFile -Force
+                Write-Log -Value "HKCU file installed; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
             }
         }
-        Remove-Item `$TempHKCUFile -Force
-        Write-Log -Value "HKCU file installed; `$URL" -Severity 1 -Component "Install-HKCU"
-    }
-    else {
-        Write-Log -Value "HKCU settings detected; skipping; `$URL" -Severity 1 -Component "Install-HKCU"
+        Else {
+            Write-Log -Value "Regedit settings is detected, aborting install; `$(`$regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+        }
     }
 }
 
@@ -271,11 +280,12 @@ If (!(`$CurrentName -eq `$NewName)) {
     Rename-Computer -ComputerName `$CurrentName -NewName `$NewName
 }
 
-Invoke-Chocolatey
+
+Invoke-Chocolatey -Branch `$Branch
 
 
 `$AdvInstConfig = `$env:TEMP + "\AdvInstConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/`$Branch/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile `$AdvInstConfig
 `$AdvInstallers = Get-Content `$AdvInstConfig | ConvertFrom-Json
 
 foreach (`$AdvInst in `$AdvInstallers) {
@@ -285,41 +295,14 @@ foreach (`$AdvInst in `$AdvInstallers) {
 Remove-Item `$AdvInstConfig -Force
 
 
-`$HKLMFileConf = `$env:TEMP + "\HKLMFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/config.json" -OutFile `$HKLMFileConf
-`$HKLMFiles = Get-Content `$HKLMFileConf | ConvertFrom-Json
-
-foreach (`$hklmfile in `$HKLMFiles) {
-    Install-HKLM -URL `$hklmfile.URL -detection `$hklmfile.detection
-}
-
-Remove-Item `$HKLMFileConf -Force
+Invoke-Regedit -Branch `$Branch
 
 
-`$HKCUFileConf = `$env:TEMP + "\HKCUFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile `$HKCUFileConf
-`$HKCUFiles = Get-Content `$HKCUFileConf | ConvertFrom-Json
-
-foreach (`$hkcufile in `$HKCUFiles) {
-    Install-HKCU -URL `$hkcufile.URL -detection `$hkcufile.detection
-}
-
-Remove-Item `$HKCUFileConf -Force
-
-
-`$SCConfig = `$env:TEMP + "\SCConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile `$SCConfig
-`$SCs = Get-Content `$SCConfig | ConvertFrom-Json
-
-foreach (`$sc in `$SCs) {
-    Install-SC -SCName `$sc.Name -SCType `$sc.Type -Path `$sc.Path -WorkingDir `$sc.WorkingDir -Arguments `$sc.Arguments -IconFileandType `$sc.IconFileandType -Description `$sc.Description -Mode `$sc.Mode
-}
-
-Remove-Item `$SCConfig -Force
+Invoke-SC -Branch `$Branch
 
 
 `$PSConfig = `$env:TEMP + "\PSConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile `$PSConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/`$Branch/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile `$PSConfig
 `$PSs = Get-Content `$PSConfig | ConvertFrom-Json
 
 foreach (`$ps in `$PSs) {
@@ -336,7 +319,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.6"
+$ScheduledTaskVersion = "0.0.7"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {

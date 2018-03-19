@@ -1,3 +1,5 @@
+$Branch = "master"
+
 function Write-Log {
     Param(
         [string]$Value,
@@ -156,11 +158,12 @@ function Invoke-Regedit {
     
     $regfiles = Get-Content -Path $RegeditFileConf | ConvertFrom-Json
     ForEach ($regfile in $regfiles) {
-        if ($regfile.Type -eq "HKLM") {
-            Write-Log -Value "Starting detection of HKLM settings; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
-            $runDetectionRule = Invoke-Expression -Command $regfile.detection
-            If (!($runDetectionRule -eq $true)) {
-                Write-Log -Value "HKLM settings not detected; starting install; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+        Write-Log -Value "Starting detection of Regedit settings; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+        $runDetectionRule = Invoke-Expression -Command $regfile.detection
+        If (!($runDetectionRule -eq $true)) {
+            Write-Log -Value "Regedit settings not detected; starting install; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+            if ($regfile.Type -eq "HKLM") {
+                Write-Log -Value "Regedit settings is HKLM; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
                 $TempHKLMFile = $env:TEMP + "\TempHKLM.reg"
                 Remove-Item $TempHKLMFile -Force -ErrorAction Ignore
                 Invoke-WebRequest -Uri $($regfile.URL) -OutFile $TempHKLMFile
@@ -169,46 +172,28 @@ function Invoke-Regedit {
                 Remove-Item $TempHKLMFile -Force
                 Write-Log -Value "HKLM file installed; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
             }
-            Else {
-                Write-Log -Value "HKLM file already detected; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+            elseif ($regfile.Type -eq "HKCU") {
+                Write-Log -Value "Regedit settings is HKCU; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
+                $TempHKCUFile = $env:TEMP + "\TempHKCU.reg"
+                Remove-Item $TempHKCUFile -Force -ErrorAction Ignore
+                Invoke-WebRequest -Uri $($regfile.URL) -OutFile $TempHKCUFile
+                $regfile = Get-Content $TempHKCUFile
+                $hives = Get-ChildItem -Path REGISTRY::HKEY_USERS | Select-Object -ExpandProperty Name
+                foreach ($hive in $hives) {
+                    if (!($hive -like "*_Classes")) {
+                        $newregfile = $regfile -replace "HKEY_CURRENT_USER",$hive
+                        Set-Content -Path $TempHKCUFile -Value $newregfile
+                        $Arguments = "/s $TempHKCUFile"
+                        Start-Process "regedit.exe" -ArgumentList $Arguments -Wait
+                    }
+                }
+                Remove-Item $TempHKCUFile -Force
+                Write-Log -Value "HKCU file installed; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
             }
         }
-        elseif ($regfile.Type -eq "HKCU") {
-            ##ADD HKCU HERE
+        Else {
+            Write-Log -Value "Regedit settings is detected, aborting install; $($regfile.URL)" -Severity 1 -Component "Invoke-Regedit"
         }
-    }
-}
-
-
-
-function Install-HKCU {
-    Param(
-        $URL,
-        $detection
-    )
-    Write-Log -Value "Starting detection of HKCU settings; $URL" -Severity 1 -Component "Install-HKCU"
-    $runDetectionRule = Invoke-Expression -Command $detection
-    
-    If (!($runDetectionRule -eq $true)) {
-        Write-Log -Value "HKCU settings not detected; starting install; $URL" -Severity 1 -Component "Install-HKCU"
-        $TempHKCUFile = $env:TEMP + "\TempHKCU.reg"
-        Remove-Item $TempHKCUFile -Force | Out-Null
-        Invoke-WebRequest -Uri $URL -OutFile $TempHKCUFile
-        $regfile = Get-Content $TempHKCUFile
-        $hives = Get-ChildItem -Path REGISTRY::HKEY_USERS | Select-Object -ExpandProperty Name
-        foreach ($hive in $hives) {
-            if (!($hive -like "*_Classes")) {
-                $newregfile = $regfile -replace "HKEY_CURRENT_USER",$hive
-                Set-Content -Path $TempHKCUFile -Value $newregfile
-                $Arguments = "/s $TempHKCUFile"
-                Start-Process "regedit.exe" -ArgumentList $Arguments -Wait
-            }
-        }
-        Remove-Item $TempHKCUFile -Force
-        Write-Log -Value "HKCU file installed; $URL" -Severity 1 -Component "Install-HKCU"
-    }
-    else {
-        Write-Log -Value "HKCU settings detected; skipping; $URL" -Severity 1 -Component "Install-HKCU"
     }
 }
 
@@ -294,11 +279,12 @@ If (!($CurrentName -eq $NewName)) {
     Rename-Computer -ComputerName $CurrentName -NewName $NewName
 }
 
-Invoke-Chocolatey
+
+Invoke-Chocolatey -Branch $Branch
 
 
 $AdvInstConfig = $env:TEMP + "\AdvInstConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile $AdvInstConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile $AdvInstConfig
 $AdvInstallers = Get-Content $AdvInstConfig | ConvertFrom-Json
 
 foreach ($AdvInst in $AdvInstallers) {
@@ -308,33 +294,14 @@ foreach ($AdvInst in $AdvInstallers) {
 Remove-Item $AdvInstConfig -Force
 
 
-$HKLMFileConf = $env:TEMP + "\HKLMFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKLM/config.json" -OutFile $HKLMFileConf
-$HKLMFiles = Get-Content $HKLMFileConf | ConvertFrom-Json
-
-foreach ($hklmfile in $HKLMFiles) {
-    Install-HKLM -URL $hklmfile.URL -detection $hklmfile.detection
-}
-
-Remove-Item $HKLMFileConf -Force
+Invoke-Regedit -Branch $Branch
 
 
-$HKCUFileConf = $env:TEMP + "\HKCUFileConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/HKCU/config.json" -OutFile $HKCUFileConf
-$HKCUFiles = Get-Content $HKCUFileConf | ConvertFrom-Json
-
-foreach ($hkcufile in $HKCUFiles) {
-    Install-HKCU -URL $hkcufile.URL -detection $hkcufile.detection
-}
-
-Remove-Item $HKCUFileConf -Force
-
-
-Invoke-SC
+Invoke-SC -Branch $Branch
 
 
 $PSConfig = $env:TEMP + "\PSConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile $PSConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile $PSConfig
 $PSs = Get-Content $PSConfig | ConvertFrom-Json
 
 foreach ($ps in $PSs) {
