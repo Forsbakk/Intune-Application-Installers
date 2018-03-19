@@ -12,7 +12,7 @@ $ChocoPkgs = @(
         Mode = "install"
     },
     @{
-        Name = "sccmclictr"
+        Name = "sccmtoolkit"
         Mode = "install"
     }
 )
