@@ -1,5 +1,5 @@
 $Script = @"
-`$Branch = "Beta"
+`$Branch = "beta"
 
 function Write-Log {
     Param(
