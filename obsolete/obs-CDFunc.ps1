@@ -87,3 +87,74 @@ function Install-MSI {
         }    
     }
 }
+
+function Install-SC {
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory=$true)]
+        [string]$SCName,
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("url","lnk")]
+        [string]$SCType,
+        [Parameter(Mandatory=$true)]
+        [string]$Path,
+        [string]$WorkingDir = $null,
+        [string]$Arguments = $null,
+        [string]$IconFileandType = $null,
+        [string]$Description = $null,
+        [string]$Mode
+    )
+    If ($Mode -eq "Uninstall") {
+        Write-Log -Value "Starting deletion of $SCName" -Severity 1 -Component "Install-SC"
+        $FileToDelete = $env:PUBLIC + "\Desktop\$SCName.$SCType"
+        Remove-Item $FileToDelete -Force
+        Write-Log -Value "$SCName deleted" -Severity 1 -Component "Install-SC"
+    }
+    Elseif ($Mode -eq "Install") {
+        Write-Log -Value "Starting detection of $SCName" -Severity 1 -Component "Install-SC"
+        If ($SCType -eq "lnk") {
+            $verPath = $WorkingDir + "\" + $Path
+            $Detection = Test-Path $verPath
+            If (!($Detection)) { 
+                $verPath = $Path
+                $Detection = Test-Path $verPath
+                If (!($Detection)) { 
+                    $verPath = $Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
+                    $verPath = $verPath[0] -replace '"',''
+                    $Detection = Test-Path $verPath
+                }
+            }
+        }
+        Else {
+            $Detection = "url-file"
+        }
+        If (!($Detection)) {
+            Write-Log -Value "Can not detect $SCName endpoint; skipping" -Severity 2 -Component "Install-SC"
+        }
+        else {
+            If (Test-Path ($env:PUBLIC + "\Desktop\$SCName.$SCType")) {
+                Write-Log -Value "$SCName already exists; skipping" -Severity 1 -Component "Install-SC"
+            }
+            else {
+                Write-Log -Value "$SCName is not detected; starting installation" -Severity 1 -Component "Install-SC"
+                $ShellObj = New-Object -ComObject ("WScript.Shell")
+                $SC = $ShellObj.CreateShortcut($env:PUBLIC + "\Desktop\$SCName.$SCType")
+                $SC.TargetPath="$Path"
+                If ($WorkingDir.Length -ne 0) {
+                    $SC.WorkingDirectory = "$WorkingDir";
+                }
+                If ($Arguments.Length -ne 0) {
+                    $SC.Arguments = "$Arguments";
+                }
+                If ($IconFileandType.Length -ne 0) {
+                    $SC.IconLocation = "$IconFileandType";
+                }
+                If ($Description.Length -ne 0) {
+                    $SC.Description  = "$Description";
+                }
+                $SC.Save()
+                Write-Log -Value "$SCName is installed" -Severity 1 -Component "Install-SC"
+            }
+        }
+    }
+}
