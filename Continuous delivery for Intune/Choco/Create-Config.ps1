@@ -10,14 +10,6 @@ $ChocoPkgs = @(
     @{
         Name = "audacity"
         Mode = "install"
-    },
-    @{
-        Name = "sccmtoolkit"
-        Mode = "install"
-    },
-    @{
-        Name = "sccmclictr"
-        Mode = "uninstall"
     }
 )
 $ChocoPkgs | ConvertTo-Json -Compress | Out-File config.json
