@@ -96,10 +96,10 @@ function Invoke-SC {
                 $verPath = $SC.WorkingDir + "\" + $SC.Path
                 $Detection = Test-Path $verPath
                 If (!($Detection)) { 
-                    $verPath = $Path
+                    $verPath = $SC.Path
                     $Detection = Test-Path $verPath
                     If (!($Detection)) { 
-                        $verPath = $Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
+                        $verPath = $SC.Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)'
                         $verPath = $verPath[0] -replace '"',''
                         $Detection = Test-Path $verPath
                     }

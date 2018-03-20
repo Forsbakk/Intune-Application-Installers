@@ -97,10 +97,10 @@ function Invoke-SC {
                 `$verPath = `$SC.WorkingDir + "\" + `$SC.Path
                 `$Detection = Test-Path `$verPath
                 If (!(`$Detection)) { 
-                    `$verPath = `$Path
+                    `$verPath = `$SC.Path
                     `$Detection = Test-Path `$verPath
                     If (!(`$Detection)) { 
-                        `$verPath = `$Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*`$)'
+                        `$verPath = `$SC.Path -split ' +(?=(?:[^\"]*\"[^\"]*\")*[^\"]*`$)'
                         `$verPath = `$verPath[0] -replace '"',''
                         `$Detection = Test-Path `$verPath
                     }
@@ -319,7 +319,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 $Script | Out-File "C:\Windows\Scripts\Start-ContinuousDelivery.ps1" -Force
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.7"
+$ScheduledTaskVersion = "0.0.7.0.1"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
