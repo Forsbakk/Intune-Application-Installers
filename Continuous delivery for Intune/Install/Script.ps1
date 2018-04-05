@@ -1,4 +1,4 @@
-$Branch = "master"
+$Branch = "prod"
 
 function Write-Log {
     Param(
@@ -21,7 +21,7 @@ function Write-Log {
 
 function Invoke-Chocolatey {
     Param(
-        $Branch = "master"
+        $Branch = "prod"
     )
 
     $ChocoConfFile = "C:\Windows\Temp\ChocoConf.json"
@@ -47,7 +47,7 @@ function Invoke-Chocolatey {
 
     Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-Chocolatey"
     try {
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/Choco/config.json" -OutFile $ChocoConfFile
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/$Branch/Choco/config.json" -OutFile $ChocoConfFile
     }
     catch {
         Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-Chocolatey"
@@ -68,14 +68,14 @@ function Invoke-Chocolatey {
 
 function Invoke-SC {
     Param(
-        $Branch = "master"
+        $Branch = "prod"
     )
 
     $SCConfFile = "C:\Windows\Temp\SCConf.json"
 
     Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-SC"
     try {
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/Shortcuts/config.json" -OutFile $SCConfFile
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/$Branch/Shortcuts/config.json" -OutFile $SCConfFile
     }
     catch {
         Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-SC"
@@ -142,14 +142,14 @@ function Invoke-SC {
 
 function Invoke-Regedit {
     Param (
-        $Branch = "master"
+        $Branch = "prod"
     )
 
     $RegeditFileConf = "C:\Windows\Temp\RegeditFileConfig.json"
 
     Write-Log -Value "Downloading config file" -Severity 1 -Component "Invoke-Regedit"
     try {
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/Regedit/config.json" -OutFile $RegeditFileConf
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/$Branch/Regedit/config.json" -OutFile $RegeditFileConf
     }
     catch {
         Write-Log -Value "Failed to download config file" -Severity 3 -Component "Invoke-Regedit"
@@ -284,7 +284,7 @@ Invoke-Chocolatey -Branch $Branch
 
 
 $AdvInstConfig = $env:TEMP + "\AdvInstConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/Custom%20Execution/config.json" -OutFile $AdvInstConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/$Branch/Custom%20Execution/config.json" -OutFile $AdvInstConfig
 $AdvInstallers = Get-Content $AdvInstConfig | ConvertFrom-Json
 
 foreach ($AdvInst in $AdvInstallers) {
@@ -301,7 +301,7 @@ Invoke-SC -Branch $Branch
 
 
 $PSConfig = $env:TEMP + "\PSConfig.JSON"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/$Branch/Continuous%20delivery%20for%20Intune/PowerShell/config.json" -OutFile $PSConfig
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/$Branch/PowerShell/config.json" -OutFile $PSConfig
 $PSs = Get-Content $PSConfig | ConvertFrom-Json
 
 foreach ($ps in $PSs) {
