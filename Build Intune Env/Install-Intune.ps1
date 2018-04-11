@@ -1,3 +1,6 @@
+##TODO
+#1) Add Company branding
+#2) Add Microsoft Store apps
 #Define which user to use and which group to assign to
 $global:User = ""
 $global:Group = "All Users"
