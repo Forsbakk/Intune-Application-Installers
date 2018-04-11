@@ -1,7 +1,6 @@
 #Define which user to use and which group to assign to
 $global:User = ""
 $global:Group = "All Users"
-$global:CDFile = ""
 
 #Function for fetching AuthToken
 function Get-AuthToken {
@@ -241,10 +240,21 @@ Function Add-O365 {
 
 #Function to add CD4Intune - Beta
 Function Add-CD4Intune {
+    If (!(Test-Path "C:\temp")) {
+        New-Item -Path "C:\temp" -ItemType Directory
+        $cleanuptemp = $true
+    }
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Install/Install-CDforIntuneBETA.ps1" -OutFile "C:\temp\Install-CDforIntuneBETA.ps1"
+
     $objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
-    $Create_Script = Add-PowerShellScript -Name "CD4Intune - Beta" -Desc "Description" -File $CDFile
+    $Create_Script = Add-PowerShellScript -Name "CD4Intune - Beta" -Desc "CD4Intune" -File "C:\temp\Install-CDforIntuneBETA.ps1"
     $ScriptId = $Create_Script.id
     Add-PowerShellScriptAssignment -ScriptId $ScriptId -TargetId $objID
+
+    Remove-Item -Path "C:\temp\Install-CDforIntuneBETA.ps1" -Force
+    If ($cleanuptemp -eq $true) {
+        Remove-Item "C:\temp" -Force
+    }
 }
 
 #Function to add OMA-URIs
