@@ -115,7 +115,8 @@ function Add-PowerShellScript {
     Param(
         $Name,
         $Desc,
-        $File
+        $File,
+        $runcontext
     )
     
     $encFile = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$File"));
@@ -130,7 +131,7 @@ function Add-PowerShellScript {
     "@odata.type": "microsoft.graph.runSchedule"
 },
     "scriptContent": "$encFile",
-    "runAsAccount": "system",
+    "runAsAccount": "$runcontext",
     "enforceSignatureCheck": false,
     "fileName": "$($FileName.Name)"
 }
@@ -201,6 +202,10 @@ function Add-DeviceConfigurationAssignment {
 
 #Function to add O365 
 Function Add-O365 {
+    Param(
+        $Language,
+        $AssignGroup
+    )
     $JSON = @"
 {
   "@odata.type": "#microsoft.graph.officeSuiteApp",
@@ -220,7 +225,7 @@ Function Add-O365 {
     "value": "iVBORw0KGgoAAAANSUhEUgAAAF0AAAAeCAMAAAEOZNKlAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJhUExURf////7z7/i9qfF1S/KCW/i+qv3q5P/9/PrQwfOMae1RG+s8AOxGDfBtQPWhhPvUx/759/zg1vWgg+9fLu5WIvKFX/rSxP728/nCr/FyR+tBBvOMaO1UH+1RHOs+AvSScP3u6f/+/v3s5vzg1+xFDO9kNPOOa/i7pvzj2/vWyes9Af76+Pzh2PrTxf/6+f7y7vOGYexHDv3t5+1SHfi8qPOIZPvb0O1NFuxDCe9hMPSVdPnFs/3q4/vaz/STcu5VIe5YJPWcfv718v/9/e1MFfF4T/F4TvF2TP3o4exECvF0SexIEPONavzn3/vZze1QGvF3Te5dK+5cKvrPwPrQwvKAWe1OGPexmexKEveulfezm/BxRfamiuxLE/apj/zf1e5YJfSXd/OHYv3r5feznPakiPze1P7x7f739f3w6+xJEfnEsvWdf/Wfge1LFPe1nu9iMvnDsfBqPOs/BPOIY/WZevJ/V/zl3fnIt/vTxuxHD+xEC+9mN+5ZJv749vBpO/KBWvBwRP/8+/SUc/etlPjArP/7+vOLZ/F7UvWae/708e1OF/aihvSWdvi8p+tABfSZefvVyPWihfSVde9lNvami+9jM/zi2fKEXvBuQvOKZvalifF5UPJ/WPSPbe9eLfrKuvvd0uxBB/7w7Pzj2vrRw/rOv+1PGfi/q/eymu5bKf3n4PnJuPBrPf3t6PWfgvWegOxCCO9nOO9oOfaskvSYePi5pPi2oPnGtO5eLPevlvKDXfrNvv739Pzd0/708O9gL+9lNfJ9VfrLu/OPbPnDsPBrPus+A/nArfarkQAAAGr5HKgAAADLdFJOU/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AvuakogAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAz5JREFUOE+tVTtu4zAQHQjppmWzwIJbEVCzpTpjbxD3grQHSOXKRXgCAT6EC7UBVAmp3KwBnmvfzNCyZTmxgeTZJsXx43B+HBHRE34ZkXgkerXFTheeiCkRrbB4UXmp4wSWz5raaQEMTM5TZwuiXoaKgV+6FsmkZQcSy0kA71yMTMGHanX+AzMMGLAQCxU1F/ZwjULPugazl82GM0NEKm/U8EqFwEkO3/EAT4grgl0nucwlk9pcpTTJ4VPA4g/Rb3yIRhhp507e9nTQmZ1OS5RO4sS7nIRPEeHXCHdkw9ZEW2yVE5oIS7peD58Avs7CN+PVCmHh21oOqBdjDzIs+FldPJ74TFESUSJEfVzy9U/dhu+AuOT6eBp6gGKyXEx8euO450ZE4CMfstMFT44broWw/itkYErWXRx+fFArt9Ca9os78TFed0LVIUsmIHrwbwaw3BEOnOk94qVpQ6Ka2HjxewJnfyd6jUtGDQLdWlzmYNYLeKbbGOucJsNabCq1Yub0o92rtR+i30V2dapxYVEePXcOjeCKPnYyit7BtKeNlZqHbr+gt7i+AChWA9RsRs03pxTQc67ouWpxyESvjK5Vs3DVSy3IpkxPm5X+wZoBi+MFHWW69/w8FRhc7VBe6HAhMB2b8Q0XqDzTNZtXUMnKMjwKVaCrB/CSUL7WSx/HsdJC86lFGXwnioTeOMPjV+szlFvrZLA5VMVK4y+41l4e1xfx7Z88o4hkilRUH/qKqwNVlgDgpvYCpH3XwAy5eMCRnezIUxffVXoDql2rTHFDO+pjWnTWzAfrYXn6BFECblUpWGrvPZvBipETjS5ydM7tdXpH41ZCEbBNy/+wFZu71QO2t9pgT+iZEf657Q1vpN94PQNDxUHeKR103LV9nPVOtDikcNKO+2naCw7yKBhOe9Hm79pe8C4/CfC2wDjXnqC94kEeBU3WwN7dt/2UScXas7zDl5GpkY+M8WKv2J7fd4Ib2rGTk+jsC2cleEM7jI9veF7B0MBJrsZqfKd/81q9pR2NZfwJK2JzsmIT1Ns8jUH0UusQBpU8d2JzsHiXg1zXGLqxfitUNTDT/nUUeqDBp2HZVr+Ocqi/Ty3Rf4Jn82xxfSNtAAAAAElFTkSuQmCC"
   },
   "localesToInstall": [
-    "nb-no"
+    "$Language"
   ],
   "notes": "",
   "officePlatformArchitecture": "x86",
@@ -235,34 +240,62 @@ Function Add-O365 {
 }
 "@
 
-    $objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
+    $objID = Get-AADGroupbyName -Name $AssignGroup | Select-Object -ExpandProperty id
     $Create_Application = Add-MDMApplication -JSON $JSON
     $ApplicationId = $Create_Application.id
     Add-ApplicationAssignment -ApplicationId $ApplicationId -TargetGroupId $objID -InstallIntent "required"
 }
 
-#Function to add CD4Intune - Beta
-Function Add-CD4Intune {
-    If (!(Test-Path "C:\temp")) {
-        New-Item -Path "C:\temp" -ItemType Directory
-        $cleanuptemp = $true
-    }
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Install/Install-CDforIntuneBETA.ps1" -OutFile "C:\temp\Install-CDforIntuneBETA.ps1"
-
-    $objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
-    $Create_Script = Add-PowerShellScript -Name "CD4Intune - Beta" -Desc "CD4Intune" -File "C:\temp\Install-CDforIntuneBETA.ps1"
-    $ScriptId = $Create_Script.id
-    Add-PowerShellScriptAssignment -ScriptId $ScriptId -TargetId $objID
-
-    Remove-Item -Path "C:\temp\Install-CDforIntuneBETA.ps1" -Force
-    If ($cleanuptemp -eq $true) {
-        Remove-Item "C:\temp" -Force
-    }
+#Function to add custom Device Configuration
+Function Add-CustomDeviceConfiguration {
+    Param(
+        $JSON,
+        $AssignGroup
+    )
+    $objID = Get-AADGroupbyName -Name $AssignGroup | Select-Object -ExpandProperty id
+    $Device_Config = Add-DeviceConfiguration -JSON $JSON
+    $DCid = $Device_Config.id
+    Add-DeviceConfigurationAssignment -DCId $DCid -TargetId $objID
 }
 
-#Function to add OMA-URIs
-function Add-OMAURIsDC {
-    $JSON = @"
+#Checking auth, prompts if not ok
+if ($global:authToken) {
+    $DateTime = (Get-Date).ToUniversalTime()
+    $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
+
+    if ($TokenExpires -le 0) {
+        if ($User -eq $null -or $User -eq "") {
+            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
+        }
+        $global:authToken = Get-AuthToken -User $User
+    }
+}
+else {
+    $global:authToken = Get-AuthToken -User $User
+}
+
+##Adds Office 365 nb-no and assigns to $Group
+Add-O365 -Language "nb-no" -AssignGroup $Group
+
+##Adds CD4Intune - Beta and assigns to $Group
+If (!(Test-Path "C:\temp")) {
+    New-Item -Path "C:\temp" -ItemType Directory
+    $cleanuptemp = $true
+}
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Install/Install-CDforIntuneBETA.ps1" -OutFile "C:\temp\Install-CDforIntuneBETA.ps1"
+
+$objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
+$Create_Script = Add-PowerShellScript -Name "CD4Intune - Beta" -Desc "CD4Intune" -File "C:\temp\Install-CDforIntuneBETA.ps1" -runcontext "system"
+$ScriptId = $Create_Script.id
+Add-PowerShellScriptAssignment -ScriptId $ScriptId -TargetId $objID
+
+Remove-Item -Path "C:\temp\Install-CDforIntuneBETA.ps1" -Force
+If ($cleanuptemp -eq $true) {
+    Remove-Item "C:\temp" -Force
+}
+
+##Adds OMA-URIs and assigns to $Group
+$OMA_URI_JSON = @"
 {
     "@odata.type": "#microsoft.graph.windows10CustomConfiguration",
     "description": "All HK OMA-URIs",
@@ -383,16 +416,10 @@ function Add-OMAURIsDC {
     ]
 }
 "@
-    $objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
-    $Device_Config = Add-DeviceConfiguration -JSON $JSON
-    $DCid = $Device_Config.id
-    Add-DeviceConfigurationAssignment -DCId $DCid -TargetId $objID
-}
+Add-CustomDeviceConfiguration -JSON $OMA_URI_JSON -AssignGroup $Group
 
-#Function to add custom Device Configuration
-function Add-CustomDeviceConfiguration {
-    
-    $JSON = @"
+##Adds custom Device Configuration and assigns to $Group
+$Device_Restriction_JSON = @"
 {
     "@odata.type": "#microsoft.graph.windows10GeneralConfiguration",
     "description": "Win10 - Device Configuration",
@@ -622,34 +649,4 @@ function Add-CustomDeviceConfiguration {
     "logonBlockFastUserSwitching": false
 }
 "@
-
-    $objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
-    $Device_Config = Add-DeviceConfiguration -JSON $JSON
-    $DCid = $Device_Config.id
-    Add-DeviceConfigurationAssignment -DCId $DCid -TargetId $objID
-}
-
-#Checking auth, prompts if not ok
-if ($global:authToken) {
-    $DateTime = (Get-Date).ToUniversalTime()
-    $TokenExpires = ($authToken.ExpiresOn.datetime - $DateTime).Minutes
-
-    if ($TokenExpires -le 0) {
-        if ($User -eq $null -or $User -eq "") {
-            $User = Read-Host -Prompt "Please specify your user principal name for Azure Authentication"
-        }
-        $global:authToken = Get-AuthToken -User $User
-    }
-}
-else {
-    $global:authToken = Get-AuthToken -User $User
-}
-
-##Adds Office 365 nb-no and assigns to $Group
-Add-O365
-##Adds CD4Intune - Beta and assigns to $Group
-Add-CD4Intune
-##Adds OMA-URIs and assigns to $Group
-Add-OMAURIsDC
-##Adds custom Device Configuration and assigns to $Group
-Add-CustomDeviceConfiguration
+Add-CustomDeviceConfiguration -JSON $Device_Restriction_JSON -AssignGroup $Group
