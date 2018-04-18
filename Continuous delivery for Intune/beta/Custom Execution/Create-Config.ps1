@@ -33,7 +33,7 @@ $CustomExec = @(
         FilesToDwnload = @(
             @{
                 FileName = "Install-TS20DAFix.ps1"
-                URL      = "http://sublog.org/storage/Install-TS20DAFix.ps1"
+                URL      = "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Custom%20Scripts/Install-TS20DAFix.ps1"
             },
             @{
                 FileName = "iaioi2ce.zip"
