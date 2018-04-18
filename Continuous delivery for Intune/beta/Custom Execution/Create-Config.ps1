@@ -54,4 +54,4 @@ $CustomExec = @(
         wrkDir         = "C:\Windows\Temp" 
     }   
 )
-$CustomExec | ConvertTo-Json -Compress | Out-File config.json
+$CustomExec | ConvertTo-Json -Depth 4 -Compress | Out-File config.json
