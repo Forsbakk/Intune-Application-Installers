@@ -48,7 +48,7 @@ $CustomExec = @(
         )
         Detection      = @(
             @{
-                Rule = "[bool](!(Get-WmiObject -Query `"select * from win32_computersystem where model like '20DA%'`")) -or (Get-WmiObject -Query `"select * from win32_PnPSignedDriver where DeviceID like 'I2C Controller'`")"
+                Rule = "[bool](!(Get-WmiObject -Query `"select * from win32_computersystem where model like '20DA%'`")) -or (Get-WmiObject -Query `"select * from win32_PnPSignedDriver where DeviceName like 'I2C Controller'`")"
             }
         )
         wrkDir         = "C:\Windows\Temp" 
