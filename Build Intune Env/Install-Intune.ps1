@@ -120,7 +120,7 @@ function Add-PowerShellScript {
     )
     
     $encFile = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$File"));
-    $FileName = Get-ChildItem -Path $CDFile
+    $FileName = Get-ChildItem -Path $File
 
     $JSON = @"
 {
