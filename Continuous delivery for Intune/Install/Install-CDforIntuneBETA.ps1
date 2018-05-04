@@ -7,7 +7,7 @@ If (!(Test-Path "C:\Windows\Scripts")) {
 Invoke-WebRequest -Uri $ScriptLocURI -OutFile "C:\Windows\Scripts\Start-ContinuousDelivery.ps1"
 
 $ScheduledTaskName = "Continuous delivery for Intune"
-$ScheduledTaskVersion = "0.0.8.beta"
+$ScheduledTaskVersion = "0.0.8.1.beta"
 $ScheduledTask = Get-ScheduledTask -TaskName $ScheduledTaskName
 
 if ($ScheduledTask) {
