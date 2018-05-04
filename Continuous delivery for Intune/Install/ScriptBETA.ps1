@@ -21,7 +21,7 @@ function Write-Log {
 
 function Invoke-Chocolatey {
     Param(
-        $Branch = "master"
+        $Branch = "beta"
     )
 
     $ChocoConfFile = "C:\Windows\Temp\ChocoConf.json"
@@ -68,7 +68,7 @@ function Invoke-Chocolatey {
 
 function Invoke-SC {
     Param(
-        $Branch = "master"
+        $Branch = "beta"
     )
 
     $SCConfFile = "C:\Windows\Temp\SCConf.json"
@@ -142,7 +142,7 @@ function Invoke-SC {
 
 function Invoke-Regedit {
     Param (
-        $Branch = "master"
+        $Branch = "beta"
     )
 
     $RegeditFileConf = "C:\Windows\Temp\RegeditFileConfig.json"
