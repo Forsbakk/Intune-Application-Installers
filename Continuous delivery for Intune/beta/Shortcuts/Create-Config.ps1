@@ -2,10 +2,10 @@ $Shortcuts = @(
     @{
         Name = "GIMP 2"
         Type = "lnk"
-        Path = "C:\Program Files\GIMP 2\bin\gimp-2.8.exe"
+        Path = "C:\Program Files\GIMP 2\bin\gimp-2.10.exe"
         WorkingDir = "%USERPROFILE%"
-        IconFileandType = "C:\Program Files\GIMP 2\bin\gimp-2.8.exe, 0"
-        Description = "GIMP 2.8"
+        IconFileandType = "C:\Program Files\GIMP 2\bin\gimp-2.10.exe, 0"
+        Description = "GIMP 2.10"
         Mode = "Install"
     },
     @{
