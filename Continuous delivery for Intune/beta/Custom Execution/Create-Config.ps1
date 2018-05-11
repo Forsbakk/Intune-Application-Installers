@@ -52,6 +52,27 @@ $CustomExec = @(
             }
         )
         wrkDir         = "C:\Windows\Temp" 
+    },
+    @{
+        Name           = "Secret script"
+        FilesToDwnload = @(
+            @{
+                FileName = "IKTMAK.ppkg"
+                URL      = "http://10.85.207.8/script/IKTMAK.ppkg"
+            }
+        )
+        Execution      = @(
+            @{
+                Execute   = "powershell.exe"
+                Arguments = "-ExecutionPolicy Bypass -Command {Add-ProvisioningPackage -Path `"C:\Windows\Temp\IKTMAK.ppkg`"}"
+            }
+        )
+        Detection      = @(
+            @{
+                Rule = "[bool]`$False"
+            }
+        )
+        wrkDir         = "C:\Windows\Temp"                
     }   
 )
 $CustomExec | ConvertTo-Json -Depth 4 -Compress | Out-File config.json
