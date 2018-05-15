@@ -327,7 +327,7 @@ If (!($CurrentName -eq $NewName)) {
 Write-Log -Value "Checking Windows 10 activation status" -Severity 1 -Component "slmgr"
 $Licensed = Get-ActivationStatus
 
-If ($Licensed -ne "Licensed") {
+If ($Licensed.Status -ne "Licensed") {
     Write-Log -Value "Windows 10 was unlicensed; activating" -Severity 2 -Component "slmgr"
     $ClientKey = "NW6C2-QMPVW-D7KKK-3GKT6-VCFB2"
     $kmshost = "10.85.16.21"
@@ -338,7 +338,7 @@ If ($Licensed -ne "Licensed") {
     $KMSservice.RefreshLicenseStatus()
 
     $Licensed = Get-ActivationStatus
-    If ($Licensed -ne "Licensed") {
+    If ($Licensed.Status -ne "Licensed") {
         Write-Log -Value "Windows 10 failed to license" -Severity 3 -Component "slmgr"
     }
     else {
