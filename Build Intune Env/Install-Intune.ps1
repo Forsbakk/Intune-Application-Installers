@@ -3,7 +3,8 @@
 #2) Add Microsoft Store apps
 #Define which user to use and which group to assign to
 $global:User = ""
-$global:Group = "All Users"
+$global:UserGroup = "All Users"
+$global:DeviceGroup = "All Devices"
 
 #Function for fetching AuthToken
 function Get-AuthToken {
@@ -274,17 +275,17 @@ else {
     $global:authToken = Get-AuthToken -User $User
 }
 
-##Adds Office 365 nb-no and assigns to $Group
-Add-O365 -Language "nb-no" -AssignGroup $Group
+##Adds Office 365 nb-no and assigns to $UserGroup
+Add-O365 -Language "nb-no" -AssignGroup $UserGroup
 
-##Adds CD4Intune - Beta and assigns to $Group
+##Adds CD4Intune - Beta and assigns to $UserGroup
 If (!(Test-Path "C:\temp")) {
     New-Item -Path "C:\temp" -ItemType Directory
     $cleanuptemp = $true
 }
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Forsbakk/Intune-Application-Installers/master/Continuous%20delivery%20for%20Intune/Install/Install-CDforIntuneBETA.ps1" -OutFile "C:\temp\Install-CDforIntuneBETA.ps1"
 
-$objID = Get-AADGroupbyName -Name $Group | Select-Object -ExpandProperty id
+$objID = Get-AADGroupbyName -Name $UserGroup | Select-Object -ExpandProperty id
 $Create_Script = Add-PowerShellScript -Name "CD4Intune - Beta" -Desc "CD4Intune" -File "C:\temp\Install-CDforIntuneBETA.ps1" -runcontext "system"
 $ScriptId = $Create_Script.id
 Add-PowerShellScriptAssignment -ScriptId $ScriptId -TargetId $objID
@@ -294,20 +295,13 @@ If ($cleanuptemp -eq $true) {
     Remove-Item "C:\temp" -Force
 }
 
-##Adds OMA-URIs and assigns to $Group
-$OMA_URI_JSON = @"
+##Adds Device_OMA-URIs and assigns to $DeviceGroup
+$DEVICE_OMA_URI_JSON = @"
 {
     "@odata.type": "#microsoft.graph.windows10CustomConfiguration",
-    "description": "All HK OMA-URIs",
-    "displayName": "OMA - URIs",
+    "description": "HK Device OMA-URIs",
+    "displayName": "Device_OMA-URIs",
     "omaSettings": [
-        {
-            "@odata.type": "#microsoft.graph.omaSettingString",
-            "displayName": "doAutomaticRedeployment",
-            "description": "Added in Windows 10, version 1803. Exec on this node triggers Automatic Redeployment operation. This works like PC Reset, similar to other existing nodes in this RemoteWipe CSP, except that it keeps the device enrolled in Azure AD and MDM, keeps Wi-Fi profiles, and a few other settings like region, language, keyboard.",
-            "omaUri": "./Device/Vendor/MSFT/RemoteWipe/AutomaticRedeployment/doAutomaticRedeployment",
-            "value": "1"
-        },
         {
             "@odata.type": "#microsoft.graph.omaSettingString",
             "displayName": "LastError",
@@ -320,6 +314,25 @@ $OMA_URI_JSON = @"
             "displayName": "Status",
             "description": "Added in Windows 10, version 1803. Status value indicating current state of an Automatic Redeployment operation.",
             "omaUri": "./Device/Vendor/MSFT/RemoteWipe/AutomaticRedeployment/Status",
+            "value": "1"
+        }
+    ]
+}
+"@
+Add-CustomDeviceConfiguration -JSON $DEVICE_OMA_URI_JSON -AssignGroup $DeviceGroup
+
+##Adds Vendor_OMA-URIs and assigns to $UserGroup
+$VENDOR_OMA_URI_JSON = @"
+{
+    "@odata.type": "#microsoft.graph.windows10CustomConfiguration",
+    "description": "HK Device OMA-URIs",
+    "displayName": "Device_OMA-URIs",
+    "omaSettings": [
+        {
+            "@odata.type": "#microsoft.graph.omaSettingString",
+            "displayName": "doAutomaticRedeployment",
+            "description": "Added in Windows 10, version 1803. Exec on this node triggers Automatic Redeployment operation. This works like PC Reset, similar to other existing nodes in this RemoteWipe CSP, except that it keeps the device enrolled in Azure AD and MDM, keeps Wi-Fi profiles, and a few other settings like region, language, keyboard.",
+            "omaUri": "./Device/Vendor/MSFT/RemoteWipe/AutomaticRedeployment/doAutomaticRedeployment",
             "value": "1"
         },
         {
@@ -416,7 +429,7 @@ $OMA_URI_JSON = @"
     ]
 }
 "@
-Add-CustomDeviceConfiguration -JSON $OMA_URI_JSON -AssignGroup $Group
+Add-CustomDeviceConfiguration -JSON $VENDOR_OMA_URI_JSON -AssignGroup $UserGroup
 
 ##Adds custom Device Configuration and assigns to $Group
 $Device_Restriction_JSON = @"
@@ -649,4 +662,4 @@ $Device_Restriction_JSON = @"
     "logonBlockFastUserSwitching": false
 }
 "@
-Add-CustomDeviceConfiguration -JSON $Device_Restriction_JSON -AssignGroup $Group
+Add-CustomDeviceConfiguration -JSON $Device_Restriction_JSON -AssignGroup $UserGroup
