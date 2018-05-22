@@ -6,7 +6,7 @@ $PowerShell = @(
     },
     @{
         Name = "Remove MS Teams DesktopEdt"
-        Command   = "Start-Process -FilePath `"C:\Users\Default\AppData\Local\Microsoft\Teams\Update.exe`" -ArgumentList `"--uninstall -s`""
+        Command   = "Start-Process -FilePath 'C:\Users\Default\AppData\Local\Microsoft\Teams\Update.exe' -ArgumentList '--uninstall -s'"
         Detection = "[bool]`$False"
     }
 )
