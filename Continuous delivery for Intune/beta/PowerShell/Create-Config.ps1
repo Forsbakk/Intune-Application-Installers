@@ -11,7 +11,7 @@ $PowerShell = @(
     }
     @{
         Name = "Add Restart-Computer every night"
-        Command   = "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument -Command 'Restart-Computer') -Trigger (New-ScheduledTaskTrigger -Daily -At 10:50am) -User 'SYSTEM' -RunLevel Highest -Settings (New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd) -TaskName 'Nightly Reboot' -Description 'v0.1'"
+        Command   = "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-Command Restart-Computer') -Trigger (New-ScheduledTaskTrigger -Daily -At 10:55am) -User 'SYSTEM' -RunLevel Highest -Settings (New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd) -TaskName 'Nightly Reboot' -Description 'v0.1'"
         Detection = "[bool]`$False"
     }
 )
