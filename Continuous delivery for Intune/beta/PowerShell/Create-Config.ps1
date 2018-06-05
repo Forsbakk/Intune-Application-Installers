@@ -12,7 +12,7 @@ $PowerShell = @(
     @{
         Name = "Add Restart-Computer every night"
         Command   = "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument `"-Command Restart-Computer`") -Trigger (New-ScheduledTaskTrigger -Daily -At 9:15am) -User `"SYSTEM`" -RunLevel Highest -Settings (New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd) -TaskName `"Nightly restart`" -Description `"v0.1`""
-        Detection = ""
+        Detection = "[bool]`$False"
     }
 )
 $PowerShell | ConvertTo-Json -Compress | Out-File config.json
