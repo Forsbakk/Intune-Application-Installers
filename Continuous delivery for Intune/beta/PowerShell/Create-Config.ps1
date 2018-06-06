@@ -7,12 +7,12 @@ $PowerShell = @(
     @{
         Name      = "Remove MS Teams DesktopEdt"
         Command   = "Start-Process -FilePath 'C:\Users\Default\AppData\Local\Microsoft\Teams\Update.exe' -ArgumentList '--uninstall -s' -Wait; Remove-Item -Path 'C:\Users\Default\Desktop\Microsoft Teams.lnk' -Force; Remove-Item -Path 'C:\Users\Default\AppData\Local\Microsoft\Teams' -Recurse -Force; Remove-Item -Path 'C:\Users\Default\AppData\Local\SquirrelTemp' -Recurse -Force; Remove-Item -Path 'C:\Users\Default\AppData\Roaming\Microsoft\Teams' -Recurse -Force; Remove-Item -Path 'C:\Users\Default\AppData\Roaming\Microsoft\Teams' -Recurse -Force; Remove-Item -Path 'C:\Users\Default\AppData\Local\Microsoft\TeamsMeetingAddin' -Recurse -Force"
-        Detection = "[bool]`$False"
-    }
+        Detection = "[bool](!(Test-Path -Path `"C:\Users\Default\AppData\Local\Microsoft\Teams\Update.exe`"))"
+    },
     @{
         Name = "Add Restart-Computer every night"
-        Command   = "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-Command Restart-Computer -Force') -Trigger (New-ScheduledTaskTrigger -Daily -At 11:40am) -User 'SYSTEM' -RunLevel Highest -Settings (New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd) -TaskName 'Nightly Reboot' -Description 'v0.1'"
-        Detection = "[bool]`$False"
+        Command   = "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument '-Command Restart-Computer -Force') -Trigger (New-ScheduledTaskTrigger -Daily -At 09:00pm) -User 'SYSTEM' -RunLevel Highest -Settings (New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd -WakeToRun -MaintenanceExclusive) -TaskName 'Nightly Reboot' -Description 'v0.1'"
+        Detection = "[bool](Get-ScheduledTask -TaskName 'Nightly Reboot')"
     }
 )
 $PowerShell | ConvertTo-Json -Compress | Out-File config.json
