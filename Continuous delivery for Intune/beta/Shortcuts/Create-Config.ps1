@@ -66,6 +66,16 @@ $Shortcuts = @(
         Mode            = "Install"
     },
     @{
+        Name            = "Veiledninger"
+        Type            = "lnk"
+        Path            = "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+        Arguments       = "https://info.hortenskolen.no"
+        WorkingDir      = "C:\Program Files (x86)\Google\Chrome\Application"
+        IconFileandType = "C:\Windows\System32\imageres.dll, 76"
+        Description     = "Diverse veiledinger"
+        Mode            = "Install"
+    },
+    @{
         Name            = "Print Kode"
         Type            = "lnk"
         Path            = "DUMMY"
