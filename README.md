@@ -23,5 +23,3 @@ Mark | Meaning
 :heavy_check_mark: | Tested and verified
 :heavy_minus_sign: | Unverified
 :heavy_exclamation_mark: | Known errors
-
-Test commit
