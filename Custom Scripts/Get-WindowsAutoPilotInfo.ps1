@@ -2,9 +2,9 @@
 #Get-WindowsAutoPilotInfo.ps1
 #Outputs AutoPilotInfo to a file
 #22.01.2018
-#JF;Horten kommune
+#Jonas Forsbakk - Horten kommune
 #
-#Usage: powershell.exe -Executionpolicy Bypass -Command "& { . .\Get-WindowsAutoPilotInfo.ps1; Add-AutoPilot -FilePath <path> }"
+#Usage: powershell.exe -Executionpolicy Bypass -Command "& { . Get-WindowsAutoPilotInfo.ps1; Add-AutoPilot }"
 #
 function Get-WindowsAutoPilotInfo {
     Param (
@@ -27,21 +27,21 @@ function Get-WindowsAutoPilotInfo {
 
 function Add-AutoPilot {
     Param (
-        [string]$FilePath = ""
+        [string]$FilePath = "CSVs\$($env:COMPUTERNAME).csv"
     )
 
     $Computers = @()
 
     $APInfo = Get-WindowsAutoPilotInfo
     $CSVContent = Import-Csv -Path $FilePath
+	
+	If (!($CSVContent)) {
+		$Computers += $APInfo
+        $Computers | Select-Object "Device Serial Number", "Windows Product ID", "Hardware Hash" | ConvertTo-Csv -NoTypeInformation | ForEach-Object {$_ -replace '"',''} | Out-File $FilePath
+	}
 
-    If ($CSVContent | Where-Object {$_."Device Serial Number" -eq $APInfo."Device Serial Number"}) {
+	else {
         $throw = $true
         Write-Output "Device already exist, skipping"
-    }
-    If (!($throw)) {
-        $Computers += $CSVContent
-        $Computers += $APInfo
-        $Computers | Select-Object "Device Serial Number", "Windows Product ID", "Hardware Hash" | ConvertTo-Csv -NoTypeInformation | ForEach-Object {$_ -replace '"',''} | Out-File $FilePath
     }
 }
