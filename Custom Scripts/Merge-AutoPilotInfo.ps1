@@ -1,3 +1,10 @@
+﻿#
+#Merge-AutoPilotInfo.ps1
+#Samler alle autopilot-filene sammen, og lager en "samlefil"
+#22.01.2018
+#Jonas Forsbakk - Horten kommune
+#
+
 $Files = Get-ChildItem ".\CSVs"
 $Computers = @()
 
